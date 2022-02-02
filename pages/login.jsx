@@ -1,5 +1,5 @@
 import react from 'react'
-import {CobiDiv} from '../style/loginstyle'
+import {CobiDiv, Myh1} from '../style/loginstyle'
 
 
 
