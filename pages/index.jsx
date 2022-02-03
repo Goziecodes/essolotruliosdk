@@ -1,5 +1,10 @@
 import Head from 'next/head'
 import { Container, Row, Card, Button } from 'react-bootstrap'
+import styled from "styled-components";
+
+const P = styled.p`
+color: red;
+`
 
 export default function Home() {
   return (
@@ -9,6 +14,7 @@ export default function Home() {
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
       <Container>
+      <P>I MUst Po</P>
         <h1>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
@@ -21,7 +27,7 @@ export default function Home() {
               <Card.Body>
                 <Card.Title>Documentation</Card.Title>
                 <Card.Text>
-                  Find in-depth information about Next.js features and API.
+                  Find in-depth information about Next.js features and APIs.
                 </Card.Text>
                 <Button variant="primary" href="https://nextjs.org/docs">
                   More &rarr;
