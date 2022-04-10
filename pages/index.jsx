@@ -1,95 +1,431 @@
-import Head from 'next/head'
-import { Container, Row, Card, Button } from 'react-bootstrap'
+import React from "react";
+import Head from "next/head";
+import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { Spinner } from "react-bootstrap";
+import Link from 'next/link'
 import styled from "styled-components";
+import Image from "next/image";
+import msia from "../public/msia.png";
+import bg4x from "../public/1.png";
+import abc from "../public/favicon.ico";
+import Profile from "../public/Iconly/Light/Profile.svg";
+import Message from "../public/Iconly/Light/Message.svg";
+import Lock from "../public/Iconly/Light/Lock.svg";
+import Hide from "../public/Iconly/Light/Hide.svg";
+import "react-toastify/dist/ReactToastify.css";
 
-const P = styled.p`
-color: red;
-`
+// background: linear-gradient(
+//   0deg
+//   , rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05)), #FFFFFF;
+//   `;
 
-export default function Home() {
+// .headerBox {
+//   ${"" /* background: red; */}
+//   ${'' /* height: 180px; */}
+//   display: flex;
+//   flex-direction: column;
+//   ${"" /* justify-content: center; */}
+//   align-items: center;
+//   ${'' /* justify-content: space-between; */}
+// }
+
+const Container = styled.div`
+  width: 100%;
+  height: 100vh;
+  background: url('${bg4x.src}') no-repeat;
+  background-size: contain;
+  .welcomeText {
+    font-style: normal;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-size: 24px;
+    color: #8d1919;
+    text-align: center;
+    margin-top: 80px;
+  }
+
+  .descriptionText {
+    font-style: normal;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    color: #000000;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .inputContainer {
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin: 20px 0px;
+    flex-direction: column;
+
+    .err {
+      font-style: normal;
+      font-family: "Poppins", sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 150%;
+      color: orangered;
+      text-align: center;
+    }
+  }
+`;
+
+const Texts = styled.div`
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Imagediv = styled.div`
+  ${'' /* width: 100%;
+  height: 90px; */}
+  background: red;
+  }
+`;
+
+const Signup = styled.button`
+  width: 225px;
+  height: 48px;
+  background: linear-gradient(
+      180deg,
+      rgba(211, 121, 121, 0.5) 0%,
+      rgba(141, 25, 25, 0.5) 100%
+    ),
+    #8d1919;
+  box-shadow: -4px -4px 8px #ffffff, 4px 4px 8px rgba(0, 0, 0, 0.16);
+  border-radius: 24px;
+  border: none;
+
+  font-style: normal;
+  font-weight: normal;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: white;
+
+  a{
+    color: white;
+  }
+`;
+
+const Formdiv = styled.div`
+  width: 40%;
+  ${"" /* background: yellow; */}
+  background: linear-gradient(
+0deg
+, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05)), #FFFFFF;
+
+  .headerBox {
+    ${"" /* background: red; */}
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    ${"" /* justify-content: center; */}
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .box {
+    ${"" /* background: red; */}
+    display: flex;
+    flex-direction: column;
+    ${"" /* justify-content: center; */}
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  p {
+    font-style: normal;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 150%;
+    letter-spacing: 0.005em;
+    color: rgba(0, 0, 0, 0.4);
+    ${"" /* padding: 1px; */}
+    ${"" /* margin-top: 25px; */}
+  }
+
+  .signinText {
+    font-style: normal;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 24px;
+    color: #8D1919;
+  }
+
+  .inputContainer {
+  display: flex;
+  width: 100%;
+  position: relative;
+  margin: 20px 0px;
+  flex-direction: column;
+
+  .err{
+    font-style: normal;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 150%;
+    color: orangered;
+    text-align: center;
+  }
+}
+  .checkboxContainer {
+  width:100%;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 22px;
+  font-family: 'Poppins', sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkboxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #d0d0d0;
+  border-radius: 10px;
+}
+
+/* On mouse-over, add a grey background color */
+.checkboxContainer:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a red background */
+.checkboxContainer input:checked ~ .checkmark {
+  background-color: rgba(141, 25, 25, 1);
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkboxContainer input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkboxContainer .checkmark:after {
+  left: 10px;
+  top: 7px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.checkboxContainer .termsText {
+font-style: normal;
+font-family: 'Poppins', sans-serif;
+font-weight: 200;
+font-size: 14px;
+line-height: 150%;
+letter-spacing: 0.005em;
+
+}
+
+
+
+  .user{
+    position: absolute;
+    top: 12px;
+    left: 17px;
+}
+  .user2{
+    position: absolute;
+    top: 12px;
+    right: 17px;
+}
+
+  }
+  .field {
+    width: 400px;
+    height: 48px;
+    padding: 12px 50px;
+    background: linear-gradient(
+        291.76deg,
+        rgba(0, 0, 0, 0.05) 0.12%,
+        rgba(0, 0, 0, 0.025) 100%
+      ),
+      #ffffff;
+    box-shadow: inset -4px -4px 8px #ffffff,
+      inset 4px 4px 8px rgba(0, 0, 0, 0.16);
+    border-radius: 24px;
+    border: none;
+    font-style: normal;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 200;
+    font-size: 14px;
+    line-height: 150%;
+    color: rgba(0, 0, 0, 0.4);
+  }
+`;
+
+export default function Register() {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    formState: { errors },
+  } = useForm();
+
+  const mutation = useMutation(
+    async (signupDetails) => {
+      return await axios
+        .post(
+          "https://companymicroservice.azurewebsites.net/api/createacompany",
+          signupDetails
+        )
+        .catch((err) => {
+          console.log(err, "caught");
+          throw new Error(err);
+        });
+    },
+    {
+      onSuccess: async (data) => {
+        console.log(data.data, "success");
+        let response = data.data;
+        if (!response.error) {
+          toast.success("company registered successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      },
+      onError: async (error, variables, context) => {
+        console.log(error, `is the error`);
+      },
+    }
+  );
+
+  // console.log(errors, "form data");
+  // toast.success('company registered successfully', {
+  //   position: "top-right",
+  //   autoClose: 5000,
+  //   hideProgressBar: false,
+  //   closeOnClick: true,
+  //   pauseOnHover: true,
+  //   draggable: true,
+  //   progress: undefined,
+  // });
+
+  const onSubmit = (data) => {
+    console.log(data, "form data");
+    delete data.confirmPassword;
+    toast.success("company registered successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    // mutation.mutate(data);
+  };
+
   return (
-    <Container className="md-container">
+    <>
+      <ToastContainer />
       <Head>
-        <title>ReactJS with react-bootstrap</title>
-        <link rel="icon" href="/favicon-32x32.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;1,100;1,200;1,300&display=swap"
+          rel="stylesheet"
+        />
       </Head>
-      <Container>
-      <P>I MUst Po</P>
-        <h1>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-        <p>
-          Get started by editing <code>pages/index.js</code>
-        </p>
-        <Container>
-          <Row className="justify-content-md-between">
-            <Card className="sml-card">
-              <Card.Body>
-                <Card.Title>Documentation</Card.Title>
-                <Card.Text>
-                  Find in-depth information about Next.js features and APIs.
-                </Card.Text>
-                <Button variant="primary" href="https://nextjs.org/docs">
-                  More &rarr;
-                </Button>
-              </Card.Body>
-            </Card>
-            <Card className="sml-card">
-              <Card.Body>
-                <Card.Title>Learn</Card.Title>
-                <Card.Text>
-                  Learn about Next.js in an interactive course with quizzes!
-                </Card.Text>
-                <Button variant="primary" href="https://nextjs.org/learn">
-                  More &rarr;
-                </Button>
-              </Card.Body>
-            </Card>
-          </Row>
-          <Row className="justify-content-md-between">
-            <Card className="sml-card">
-              <Card.Body>
-                <Card.Title>Examples</Card.Title>
-                <Card.Text>
-                  Discover and deploy boilerplate example Next.js projects.
-                </Card.Text>
-                <Button
-                  variant="primary"
-                  href="https://github.com/vercel/next.js/tree/canary/examples"
-                >
-                  More &rarr;
-                </Button>
-              </Card.Body>
-            </Card>
-            <Card className="sml-card">
-              <Card.Body>
-                <Card.Title>Deploy</Card.Title>
-                <Card.Text>
-                  Instantly deploy your Next.js site to a public URL with
-                  Vercel.
-                </Card.Text>
-                <Button
-                  variant="primary"
-                  href="https://vercel.com/new?utm_source=github&utm_medium=example&utm_campaign=next-example"
-                >
-                  More &rarr;
-                </Button>
-              </Card.Body>
-            </Card>
-          </Row>
-        </Container>
-      </Container>
 
-      <footer className="cntr-footer">
-        <a
-          href="https://vercel.com?filter=next.js&utm_source=github&utm_medium=example&utm_campaign=next-example"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="sml-logo" />
-        </a>
-      </footer>
-    </Container>
-  )
+      <Container className="pt-4">
+        <Texts>
+          <Image src={msia} className="" alt="msia" />
+
+          <div className="headerBox p-3">
+            <p className="welcomeText">Get started on the MSIA KYC Framework</p>
+          </div>
+
+          <div className="descriptionText">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus
+              tempor nulla rhoncus etiam. Egestas nunc vitae justo lorem.
+              Phasellus bibendum aliquet mauris erat eleifend turpis gravida
+              lorem. Consequat risus.
+            </p>
+          </div>
+
+          <Signup className="mt-4" type="button">
+          <Link href="/start">
+          <a>Begin KYC Verification</a>
+        </Link>
+          
+          </Signup>
+        </Texts>
+
+         {/* <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <Image alt="Mountains" src={bg4x} layout="responsive" objectFit="contain" />
+    </div> */}
+        
+         {/* <Imagediv className="image" img={bg4x}>
+          <Image
+  // width={100}
+  // height={100}
+    // layout="intrinsic"
+    layout="fill"
+    objectFit="cover"
+    sizes="(max-width: 600px) 100vw, 600px"
+    objectPosition={"center"}
+    src={bg4x}
+    className=""
+    alt="Picture of the author"
+  />
+        </Imagediv>  */}
+      </Container>
+    </>
+  );
 }

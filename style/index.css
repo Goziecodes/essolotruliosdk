@@ -1,5 +1,6 @@
 /* ensure all pages have Bootstrap CSS */
 @import '~bootstrap/dist/css/bootstrap.min.css';
+@import 'https://fonts.google.com/specimen/Poppins';
 
 .md-container {
   max-width: 800px;
