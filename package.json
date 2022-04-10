@@ -9,7 +9,7 @@
     "axios": "^0.25.0",
     "bootstrap": "^4.4.1",
     "netlify-cli": "^8.16.1",
-    "next": "latest",
+    "next": "12.1.4",
     "next-images": "^1.8.4",
     "react": "^17.0.2",
     "react-bootstrap": "^1.0.1",
