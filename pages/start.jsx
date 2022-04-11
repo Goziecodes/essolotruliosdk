@@ -653,7 +653,8 @@ export default function Register() {
     function startDocumentFrontCapture(shouldCollectGeo, token) {
       // Capture Driver Licence and ID Cards.
       console.log(token, "sdktoken")
-      StartAcuantFrontDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token);
+      StartAcuantFrontDocumentCapture(true, shouldCollectGeo, startProcess, showImage, showError, token);
+      // StartAcuantFrontDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token);
     }
     function startDocumentBackCapture(shouldCollectGeo) {
       // Capture Driver Licence and ID Cards.
