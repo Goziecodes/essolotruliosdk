@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3005",
     "build": "next build",
     "start": "next start"
   },
@@ -15,10 +15,12 @@
     "react-bootstrap": "^1.0.1",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.25.3",
+    "react-icons": "^4.4.0",
     "react-query": "^3.34.19",
     "react-toastify": "^8.1.1",
     "styled-components": "^5.3.3"
   },
+  "proxy": "http://localhost:3000",
   "devDependencies": {
     "@netlify/plugin-nextjs": "^4.2.4",
     "babel-plugin-inline-react-svg": "^2.0.1",

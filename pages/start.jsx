@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Head from "next/head";
-import Script from 'next/script';
+import Script from "next/script";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import { useMutation, useQuery } from "react-query";
@@ -23,7 +23,9 @@ import Camera from "../public/Iconly/Bold/Camera.svg";
 import Message from "../public/Iconly/Light/Message.svg";
 import Lock from "../public/Iconly/Light/Lock.svg";
 import Hide from "../public/Iconly/Light/Hide.svg";
+import DocumentDetails from "../components/DocumentDetails";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
 
 const Container = styled.div`
   width: 100%;
@@ -405,46 +407,92 @@ const Signup = styled.button`
 `;
 
 export default function Register() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("details");
   const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
   const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
-  // const [username, setUsername] = useState("dev_Trulioo_15rtRS");
-  // const [password, setPassword] = useStatere("LxC^^E4PfVn3nMk8");
   const [sdkToken, setSdkToken] = useState("");
   const [isSDKInited, setIsSDKInited] = useState(false);
   const [personalDetails, setPersonalDetails] = useState({
-    firstName: "",
-    lastName: "",
+    FirstGivenName: "",
+    FirstSurName: "",
+    MiddleName: "",
+    // DayOfBirth: "",
+    // MonthOfBirth: "",
+    // YearOfBirth: "",
   });
-  const [selected, setSelected] = useState('DocumentFront');
-  const [autoCapture, setAutoCapture] = useState(false);
+  const [selected, setSelected] = useState("");
+  const [spin, setSpin] = useState("");
+  const [autoCapture, setAutoCapture] = useState(true);
+  const [imageFront, setImageFront] = useState("");
+  console.log(imageFront, 'imagefront');
+  const [imageBack, setImageBack] = useState("");
+  const [livePhoto, setLivePhoto] = useState("");
+  const [passport, setPassport] = useState("");
+  const [docFrontComplete, setDocFrontComplete] = useState(false);
+  const [docBackComplete, setDocBackComplete] = useState(false);
+  const [transactionID, setTransactionID] = useState("");
+  const [documentID, setDocumentID] = useState("");
+  const [instanceID, setInstanceID] = useState("");
+  const [selfie, setSelfie] = useState("");
 
-    // const username = 'dev_Trulioo_15rtRS';
-    // const password = 'LxC^^E4PfVn3nMk8';
-        console.log("username", username);
-        console.log("usepasswordrname", password);
-        console.log("env", process.env.NEXT_PUBLIC_USERNAME);
+  // const username = 'dev_Trulioo_15rtRS';
+  // const password = 'LxC^^E4PfVn3nMk8';
 
+  // const configKeys = `${username}:${password}`;
+  const configKeys = `EsSolo_Live_DocV_API:Essolodocv@1`;
 
-    const configKeys = `${username}:${password}`;
+  /* ---------------------- convert configkeys to base64 ---------------------- */
+  const buff = Buffer.from(configKeys);
+  const base64Token = buff.toString("base64");
 
-    /* ---------------------- convert configkeys to base64 ---------------------- */
-    const buff = Buffer.from(configKeys);
-    const base64Token = buff.toString('base64');
-    // console.log(`Basicss ${base64Token}`);
-
-
-  const { isLoading, error, data, isFetching } = useQuery("repoData", () =>
-  axios.post(
-    "https://gg-ic-sdk-server-proxy.globalgateway.io/token", {}, {
-      headers: {
-        Authorization: `Basic RXNTb2xvX0RlbW9fRG9jVl9BUEk6VHJ1bGlvb0BAMQ==`,
-      }
+  const { isLoading, error, data, isFetching } = useQuery(
+    "sdktoken",
+    () =>
+      axios.post(
+        "https://gg-ic-sdk-server-proxy.globalgateway.io/token",
+        {},
+        {
+          headers: {
+            Authorization: `Basic ${base64Token}`,
+            // Authorization: `Basic RXNTb2xvX0RlbW9fRG9jVl9BUEk6VHJ1bGlvb0BAMQ==`,
+          },
+        }
+      ),
+    {
+      onSuccess: (data) => {
+        console.log(data.data, "data me na");
+        setSdkToken(data.data.token);
+      },
+      onError: (error) => {
+        console.log(error, "error 1");
+        console.log(error.response, "error 1");
+      },
     }
-  ).then((res) => setSdkToken(res.data.token))
-);
+    // .then((res) => setSdkToken(res.data.token))
+  );
 
+  const AsyncVerifyMutation = useMutation(
+    async (userDetails) => {
+      return await axios.post(
+        // "https://api.globaldatacompany.com/verifications/v1/verify",
+        "/api/transaction",
+        userDetails
+      );
+    },
+    {
+      onSuccess: async (data) => {
+        console.log(data, "success");
+        // let response = data?.data;
+        // console.log(response.TransactionID, "response from initial verify");
+        // setTransactionID(() => response?.TransactionID);
+        // setActiveTab("document")
+      },
+      onError: async (error, variables, context) => {
+        console.log(error, `is the error`);
+        console.log(error.response, `is the error response`);
+      },
+    }
+  );
 
   const {
     register,
@@ -454,243 +502,300 @@ export default function Register() {
     formState: { errors },
   } = useForm();
 
-  const mutation = useMutation(
-    async (signupDetails) => {
-      return await axios
-        .post(
-          "https://companymicroservice.azurewebsites.net/api/createacompany",
-          signupDetails
-        )
-        .catch((err) => {
-          console.log(err, "caught");
-          throw new Error(err);
-        });
-    },
-    {
-      onSuccess: async (data) => {
-        console.log(data.data, "success");
-        let response = data.data;
-        if (!response.error) {
-          toast.success("company registered successfully", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
-      },
-      onError: async (error, variables, context) => {
-        console.log(error, `is the error`);
-      },
-    }
-  );
-
-  // console.log(errors, "form data");
-  // toast.success('company registered successfully', {
-  //   position: "top-right",
-  //   autoClose: 5000,
-  //   hideProgressBar: false,
-  //   closeOnClick: true,
-  //   pauseOnHover: true,
-  //   draggable: true,
-  //   progress: undefined,
-  // });
-
   const onSubmit = (data) => {
-    // e.preventDefault();
-    console.log(data, "form data");
     setPersonalDetails(() => ({
       ...personalDetails,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      ...data,
+      // firstName: data.firstName,
+      // lastName: data.lastName,
     }));
+    // console.log(data, "form data");
 
     setActiveTab("document");
-
-
-
-
-    // setPersonalDetails()
-    // toast.success("company registered successfully", {
-    //   position: "top-right",
-    //   autoClose: 5000,
-    //   hideProgressBar: false,
-    //   closeOnClick: true,
-    //   pauseOnHover: true,
-    //   draggable: true,
-    //   progress: undefined,
-    // });
-    // mutation.mutate(data);
   };
-  // console.log(personalDetails, "form ghcfgv77777777778 888data");
 
+  const onVerifyUser = (data) => {
+    console.log(imageFront, "imgf");
+    console.log(imageBack, "imgb");
+    console.log(personalDetails, "pds");
 
-  // const onChange = (e) => {
-  //   setPersonalDetails({
-  //     ...personalDetails,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
+    AsyncVerifyMutation.mutate({
+      AcceptTruliooTermsAndConditions: true,
+      CleansedAddress: false,
+      VerboseMode: true,
+      ConfigurationName: "Identity Verification",
+      CallBackUrl:"https://api.globaldatacompany.com/connection/v1/async-callback",
+      CountryCode: "NG",
+      DataFields: {
+        PersonInfo: {
+          ...personalDetails,
+          // "FirstGivenName": data.firstName,
+          // "FirstSurName": data.lastName
+        },
+        // "Location": {},
+        // "Communication": {},
+        Document: {
+          DocumentFrontImage: imageFront,
+          DocumentBackImage: imageBack,
+        },
+        // "Passport": {},
+        // "Business": {},
+      },
+    });
 
+    // AsyncVerifyMutation.isSuccess && setActiveTab("document");
+  };
 
-    // const username = 'dev_Trulioo_15rtRS';
-    // const password = 'LxC^^E4PfVn3nMk8';
+  // console.log(isSDKInited, "isSDKInited");
 
-    console.log(isSDKInited, "isSDKInited");
+  if (typeof window !== "undefined") {
+    window.GlobalGatewayImageCompressionOption = {
+      maxSizeMB: 4,
+      maxWidthOrHeight: 4096,
+      useWebWorker: true,
+    };
 
-    if (typeof window !== 'undefined') {
-      
-      window.GlobalGatewayImageCompressionOption = {
-        maxSizeMB: 4,
-        maxWidthOrHeight: 4096,
-        useWebWorker: true,
+    window.onAcuantSdkLoaded = () => {
+      const successHelper = () => {
+        setIsSDKInited(true);
+        // console.log(isSDKInited, "isSDKInited");
       };
-
-      window.onAcuantSdkLoaded = () => {
-   
-        const successHelper = () => {
-          setIsSDKInited(true);
-          console.log("SDK Inited");
-          console.log(isSDKInited, "isSDKInited");
-        };
-        const failHelper = () => {
-          console.error('Fail to init sdk');
-          console.log('Fail to init sdk');
-          // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
-        };
-        InitSDK(username, password, successHelper, failHelper);
-      }
-      
-    }
-
-    function writeText(text) {
-      // document.getElementById('quality-data').value = text;
-    };
-
-    function clearText() {
-      // document.getElementById('quality-data').value = '';
-    };
-
-    function showError(error) {
-      // endProcess();
-      if (Array.isArray(error) && error.length > 0) {
-        // document.querySelector('#globalGatewayError').innerHTML = "Error code: " + error[0].code + " " + error[0].type;
-        console.log(error, 'show-error')
-      } else {
-        // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
-      }
-    }
-
-    function showImage(result) {
-      console.log(result, "result");
-
-      // endProcess();
-      // document.querySelector('#globalGatewayError').innerHTML = "";
-      // document.querySelector('#capturedFrontImage').src = result.image;
-      // clearText();
-
-      let qualityText = '';
-      if (result.quality) {
-        qualityText += `Sharpness: ${result.quality.sharpness}\n` +
-          `DPI: ${result.quality.dpi}\n` +
-          `Glare: ${result.quality.glare}\n`;
-      }
-      if (result.classification) {
-        qualityText += `IDClassification: ${JSON.stringify(result.classification)}\n`;
-        qualityText += `classname: ${JSON.stringify(result.classification.ClassName)}\n`;
-      }
-      if (result.liveness) {
-        qualityText += `LivenessResult: ${JSON.stringify(result.liveness.LivenessResult)}\n` +
-          `ErrorCode: ${result.liveness.ErrorCode}\n` +
-          `ErrorMessage: ${result.liveness.ErrorMessage}`;
-      }
-      console.log(result, 'result 2.0');
-      // writeText(qualityText);
-    }
-
-    function getIsAutoDropDown() {
-      // var dropDown = document.getElementById("captureModeSelection");
-      // return dropDown.options[dropDown.selectedIndex].value == "Auto";
-      console.log(autoCapture, "autoCapture");
-      return autoCapture;
-    };
-
-    function startCapture() {
-      console.log(isSDKInited, "isSDKInited on startCapture");
-
-      if (!isSDKInited) {
+      const failHelper = () => {
+        // console.error('Fail to init sdk');
+        console.log("Fail to init sdk");
         // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
-        // return;
-        console.log('Capture SDK is not initialized');
-        return;
-      }
-      // var geoDropdown = document.getElementById("geoModeSelection");
-      var shouldCollectGeo = true;
-
-      // var dropDown = document.getElementById("captureTypeSelection");
-      // var selectedType = dropDown.options[dropDown.selectedIndex].value;
-      var selectedType = selected;
-
-      // var token = document.getElementById("tokenInput").value;
-      var token = sdkToken;
-
-      console.log(selectedType, 'selectedType')
-
-      if (selectedType == "DocumentFront") {
-        startDocumentFrontCapture(shouldCollectGeo, token);
-      } else if (selectedType == "DocumentBack") {
-        startDocumentBackCapture(shouldCollectGeo);
-      } else if (selectedType == "LivePhoto") {
-        startSelfie(shouldCollectGeo, token);
-      } else if (selectedType == "Passport") {
-        startPassport(shouldCollectGeo, token);
-      }
-    }
-
-    function startDocumentFrontCapture(shouldCollectGeo, token) {
-      // Capture Driver Licence and ID Cards.
-      console.log(token, "sdktoken")
-      StartAcuantFrontDocumentCapture(true, shouldCollectGeo, startProcess, showImage, showError, token);
-      // StartAcuantFrontDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token);
-    }
-    function startDocumentBackCapture(shouldCollectGeo) {
-      // Capture Driver Licence and ID Cards.
-      StartAcuantBackDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError);
-    }
-    function startPassport(shouldCollectGeo, token) {
-      // Capture Photo Page of Passport
-      StartAcuantPassportCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token);
-    }
-    function startSelfie(shouldCollectGeo, token) {
-      // Capture Selfie
-      StartAcuantSelfieCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token);
-    }
-
-    function startSpinner() {
-      // document.getElementById('main-spinner').style.display = 'block';
+      };
+      InitSDK(username, password, successHelper, failHelper);
     };
+  }
 
-    function hideSpinner() {
-      // document.getElementById('main-spinner').style.display = 'none';
-    };
+  // function writeText(text) {
+  //   // document.getElementById('quality-data').value = text;
+  // }
+  // function clearText() {
+  //   // document.getElementById('quality-data').value = '';
+  // }
 
-    function startProcess() {
-      console.log('start-process');
-      // $('button').attr('disabled', true);
-      // startSpinner();
-    };
+  function showError(error) {
+    console.log(error, "error");
+    // endProcess();
+    if (Array.isArray(error) && error.length > 0) {
+      // document.querySelector('#globalGatewayError').innerHTML = "Error code: " + error[0].code + " " + error[0].type;
+      console.log(error, "show-error");
+    } else {
+      console.log(error, "show-error");
+      // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
+    }
+  }
 
-    function endProcess() {
-      // $(':button').attr('disabled', false);
-      hideSpinner();
-    };
+  //  async function showImage(result) {
+  //     console.log(result, "result");
+  //     console.log(selected, "selected");
+
+  //     setRrr(result);
+
+  //     // alert (JSON.stringify(result))
+
+  //     // setDocumentID(result.classification.DocumentID)
+  //     // setInstanceID(result.classification.InstanceID)
+
+  //     if (selected == "DocumentFront") {
+  //       setImageFront(result.image);
+  //       console.log('uploading...');
+  //       await axios
+  //         .post(
+  //           "/api/upload",
+  //           // "https://api.globaldatacompany.com/v1/docv/UploadImage",
+  //           {
+  //             "TransactionID": transactionID,
+  //             "DataField": "DocumentFrontImage",
+  //             "Status": "Completed",
+  //             "Value": result.image.split(',')[1],
+  //           },
+  //           {
+  //             headers: {
+  //               Authorization: `Basic RXNTb2xvX0RlbW9fRG9jVl9BUEk6VHJ1bGlvb0BAMQ==`,
+  //             }
+  //           }
+  //         ).then((res) => console.log(res, 'my res1 here'))
+  //     } else if (selected == "DocumentBack") {
+  //       setImageBack(result.image);
+  //       await axios
+  //       .post(
+  //         "api//upload",
+  //         {
+  //           "TransactionID": transactionID,
+  //           "DataField": "DocumentBackImage",
+  //           "Status": "Completed",
+  //           "Value": result.image.split(',')[1],
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Basic RXNTb2xvX0RlbW9fRG9jVl9BUEk6VHJ1bGlvb0BAMQ==`,
+  //           }
+  //         }
+  //       ).then((res) => console.log(res, 'my res2 here'))
+  //     }
+
+  //     // else if (selectedType == "LivePhoto") {
+  //     //   startSelfie(shouldCollectGeo, token);
+  //     // } else if (selectedType == "Passport") {
+  //     //   startPassport(shouldCollectGeo, token);
+  //     // }
+
+  //     // endProcess();
+  //     // document.querySelector('#globalGatewayError').innerHTML = "";
+  //     // document.querySelector('#capturedFrontImage').src = result.image;
+  //     // clearText();
+  //   }
+
+  function getIsAutoCapture() {
+    // var dropDown = document.getElementById("captureModeSelection");
+    // return dropDown.options[dropDown.selectedIndex].value == "Auto";
+    // console.log(autoCapture, "autoCapture");
+    return autoCapture;
+  }
+
+
+  async function startCapture(doctype) {
+    if (!isSDKInited) {
+      console.log('Capture SDK is not initialized');
+      return;
+    }
+    // var geoDropdown = document.getElementById("geoModeSelection");
+    var shouldCollectGeo = true;
+
+
+    // var selectedType = selected;
+    var selectedType = doctype;
+
+    var token = sdkToken;
+
+    if (selectedType == "DocumentFront") {
+      startDocumentFrontCapture(shouldCollectGeo, token);
+    } else if (selectedType == "DocumentBack") {
+      setSpin(()=> 'docBack')
+      startDocumentBackCapture(shouldCollectGeo);
+    } else if (selectedType == "LivePhoto") {
+      startSelfie(shouldCollectGeo, token);
+    } else if (selectedType == "Passport") {
+      startPassport(shouldCollectGeo, token);
+    }
+  }
+
+  function startDocumentFrontCapture(shouldCollectGeo, token) {
+    setSpin(()=> 'docFront')
+
+    // Capture Driver Licence and ID Cards.
+    // StartAcuantFrontDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token);
+    StartAcuantFrontDocumentCapture(
+      getIsAutoCapture(),
+      shouldCollectGeo,
+      startProcess('docFront'),
+      showFrontImage,
+      showError,
+      token
+    );
+  }
+
+  function startDocumentBackCapture(shouldCollectGeo) {
+    // Capture Driver Licence and ID Cards.
+    setSpin(()=> 'docBack')
+
+    StartAcuantBackDocumentCapture(
+      getIsAutoCapture(),
+      shouldCollectGeo,
+      startProcess,
+      showBackImage,
+      showError
+    );
+  }
+
+  function startPassport(shouldCollectGeo, token) {
+    // Capture Photo Page of Passport
+    StartAcuantPassportCapture(
+      getIsAutoCapture(),
+      shouldCollectGeo,
+      startProcess,
+      showImage,
+      showError,
+      token
+    );
+  }
+
+  function startSelfie(shouldCollectGeo, token) {
+    // Capture Selfie
+    StartAcuantSelfieCapture(
+      getIsAutoCapture(),
+      shouldCollectGeo,
+      startProcess,
+      showImage,
+      showError,
+      token
+    );
+  }
+
+  function startSpinner() {
+    // document.getElementById('main-spinner').style.display = 'block';
+  }
+
+  function hideSpinner() {
+    // document.getElementById('main-spinner').style.display = 'none';
+  }
+
+  function startProcess() {
+    console.log("start-process is called");
+    // setSpin(() => '')
+    // $('button').attr('disabled', true);
+    // startSpinner();
+  }
+
+  function showImage(result) {
+    console.log(selected, "sels");
+    return;
+    console.log(result, "result");
+
+    if (selected == "DocumentFront" && result) {
+      console.log("front");
+      setImageFront(result.image.split(",")[1]);
+    } else if (selected == "DocumentBack" && result) {
+      console.log("yesyyyy");
+      console.log(result, "yesyyyy");
+      setImageBack(result.image.split(",")[1]);
+    } else if ((selected == "LivePhoto") & result) {
+      console.log("nooo");
+
+      setLivePhoto(result.image.split(",")[1]);
+    } else if ((selected == "Passport") & result) {
+      console.log("nooo");
+
+      setPassport(result.image.split(",")[1]);
+    }
+    // console.log('result', "result");
+    // console.log(result, "result");
+    // console.log(selected, "selected");
+  }
+
+  function showFrontImage(result) {
+    setSpin(() => '')
+    setDocFrontComplete(true)
+    setImageFront(result.image.split(",")[1]);
+  }
+
+  function showBackImage(result) {
+    setSpin(() => '')
+    setDocBackComplete(true)
+    setImageBack(result.image.split(",")[1]);
+  }
+
+  function endProcess() {
+    // $(':button').attr('disabled', false);
+    hideSpinner();
+  }
 
   return (
     <>
-    <Script src="./GlobalGatewayCapturePublicAcuant/GlobalGatewayImageCapture.js" />
+      <Script src="./GlobalGatewayCapturePublicAcuant/GlobalGatewayImageCapture.js" />
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -749,14 +854,30 @@ export default function Register() {
                       className="field"
                       type="text"
                       placeholder="First Name"
-                      {...register("firstName", {
+                      {...register("FirstGivenName", {
                         required: {
                           value: true,
                           message: "First name is required",
                         },
                       })}
                     />
-                    <span className="err">{errors.firstName?.message}</span>
+                    <span className="err">{errors.FirstGivenName?.message}</span>
+                  </div>
+
+                  <div className="inputContainer">
+                    <Profile className="user" style={{ width: "40px" }} />
+                    <input
+                      className="field"
+                      type="text"
+                      placeholder="Middle Name"
+                      {...register("MiddleName", {
+                        required: {
+                          value: true,
+                          message: "Middle name is required",
+                        },
+                      })}
+                    />
+                    <span className="err">{errors.MiddleName?.message}</span>
                   </div>
 
                   <div className="inputContainer">
@@ -765,99 +886,23 @@ export default function Register() {
                       className="field"
                       type="text"
                       placeholder="Last Name"
-                      {...register("lastName", {
+                      {...register("FirstSurName", {
                         required: {
                           value: true,
                           message: "Last name is required",
                         },
                       })}
                     />
-                    <span className="err">{errors.lastName?.message}</span>
+                    <span className="err">{errors.FirstSurName?.message}</span>
                   </div>
-
-                  {/* <div className="inputContainer">
-                    <Message className="user" style={{ width: "40px" }} />
-                    <input
-                      className="field"
-                      type="text"
-                      placeholder="myemail@gmail.com"
-                      {...register("email", {
-                        pattern: {
-                          value:
-                            /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                          message: "Invalid email address",
-                        },
-                        required: {
-                          value: true,
-                          message: "email is required",
-                        },
-                      })}
-                    />
-                    <span className="err">{errors.email?.message}</span>
-                  </div> 
-
-                  <div className="inputContainer">
-                    <Profile className="user" style={{ width: "40px" }} />
-                    <input
-                      className="field"
-                      type="number"
-                      placeholder="+2349031945894"
-                      {...register("mobile", {
-                        required: {
-                          value: true,
-                          message: "mobile number is required",
-                        },
-                        maxLength: {
-                          value: 11,
-                          message: "phone number must not exceed 11 digits",
-                        },
-                      })}
-                    />
-                    <span className="err">{errors.mobile?.message}</span>
-                  </div>
-
-                  <div className="formText">
-                    <p>LOCATION</p>
-                  </div>
-
-                  <div className="inputContainer">
-                    <Location className="user" style={{ width: "40px" }} />
-                    <input
-                      className="field"
-                      type="text"
-                      placeholder="City"
-                      {...register("city", {
-                        required: {
-                          value: true,
-                          message: "city is required",
-                        },
-                      })}
-                    />
-                    <span className="err">{errors.city?.message}</span>
-                  </div>
-
-                  <div className="inputContainer">
-                    <Location className="user" style={{ width: "40px" }} />
-                    <input
-                      className="field"
-                      type="text"
-                      placeholder="Country"
-                      {...register("country", {
-                        required: {
-                          value: true,
-                          message: "country is required",
-                        },
-                      })}
-                    />
-                    <span className="err">{errors.country?.message}</span>
-                  </div> */}
+        
 
                   <div className="buttonBox">
                     <Signup className="mt-4" type="submit">
-                      {mutation.isLoading ? (
+                      {AsyncVerifyMutation.isLoading ? (
                         <Spinner animation="border" variant="light" />
                       ) : (
-                          'Continue to next section'
+                        "Continue to next section"
                       )}
                     </Signup>
                   </div>
@@ -867,7 +912,20 @@ export default function Register() {
           </div>
         )}
 
-        {activeTab === "document" && <DocumentDetails startCapture={startCapture} setSelected={setSelected} setAutoCapture={setAutoCapture}/>}
+        {activeTab === "document" && (
+          <DocumentDetails
+            startCapture={startCapture}
+            setSelected={setSelected}
+            setAutoCapture={setAutoCapture}
+            onVerifyUser={onVerifyUser}
+            setSpin={setSpin}
+            docFrontComplete={docFrontComplete}
+            docBackComplete={docBackComplete}
+            spin={spin}
+            loading={AsyncVerifyMutation.isLoading}
+            result={AsyncVerifyMutation.data}
+          />
+        )}
 
         {activeTab === "selfie" && <Selfie />}
       </Container>
@@ -875,407 +933,402 @@ export default function Register() {
   );
 }
 
-const DocumentDetails = ({startCapture, setSelected, setAutoCapture}) => {
-  const [step, setStep] = useState(0);
-  const [document, setDocument] = useState('ID');
+// const DocumentDetails = ({ startCapture, setSelected, setAutoCapture }) => {
+//   const [step, setStep] = useState(0);
+//   const [document, setDocument] = useState('ID');
 
-  const {
-    register : DocumentDetailsRegister,
-    handleSubmit: DocumentDetailsRegisterHandleSubmit,
-    watch,
-    getValues,
-    formState: { errors },
-  } = useForm();
+//   const {
+//     register: DocumentDetailsRegister,
+//     handleSubmit: DocumentDetailsRegisterHandleSubmit,
+//     watch,
+//     getValues,
+//     formState: { errors },
+//   } = useForm();
 
-  const mutation = useMutation(
-    async (signupDetails) => {
-      return await axios
-        .post(
-          "https://companymicroservice.azurewebsites.net/api/createacompany",
-          signupDetails
-        )
-        .catch((err) => {
-          console.log(err, "caught");
-          throw new Error(err);
-        });
-    },
-    {
-      onSuccess: async (data) => {
-        console.log(data.data, "success");
-        let response = data.data;
-        if (!response.error) {
-          toast.success("company registered successfully", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
-      },
-      onError: async (error, variables, context) => {
-        console.log(error, `is the error`);
-      },
-    }
-  );
+//   const mutation = useMutation(
+//     async (signupDetails) => {
+//       return await axios
+//         .post(
+//           "https://companymicroservice.azurewebsites.net/api/createacompany",
+//           signupDetails
+//         )
+//         .catch((err) => {
+//           console.log(err, "caught");
+//           throw new Error(err);
+//         });
+//     },
+//     {
+//       onSuccess: async (data) => {
+//         console.log(data.data, "success");
+//         let response = data.data;
+//         if (!response.error) {
+//           toast.success("company registered successfully", {
+//             position: "top-right",
+//             autoClose: 5000,
+//             hideProgressBar: false,
+//             closeOnClick: true,
+//             pauseOnHover: true,
+//             draggable: true,
+//             progress: undefined,
+//           });
+//         }
+//       },
+//       onError: async (error, variables, context) => {
+//         console.log(error, `is the error`);
+//       },
+//     }
+//   );
 
-  const documentDetailsonSubmit = (data) => {
-    setDocument(data.document);
-    setStep(1)
-  };
+//   const documentDetailsonSubmit = (data) => {
+//     setDocument(data.document);
+//     setStep(1)
+//   };
 
-  return (
-    <>
-      {step === 0 && (
-        <div>
-          <div className="descriptionText">
-            <p>
-              Select and upload any of the documents below. Only the following
-              documents listed below will be accepted, all others will be
-              rejected.
-            </p>
-          </div>
+//   return (
+//     <>
+//       {step === 0 && (
+//         <div>
+//           <div className="descriptionText">
+//             <p>
+//               Select and upload any of the documents below. Only the following
+//               documents listed below will be accepted, all others will be
+//               rejected.
+//             </p>
+//           </div>
 
-          <Formdiv>
-            <div className="">
-              {/* <div className="box"> */}
+//           <Formdiv>
+//             <div className="">
+//               {/* <div className="box"> */}
 
-              <form className="form" onSubmit={DocumentDetailsRegisterHandleSubmit(documentDetailsonSubmit)}>
-                {/* <div className="inputContainer">
-                  <Location className="user" style={{ width: "40px" }} />
-                  <input
-                    className="field"
-                    type="text"
-                    placeholder="Country"
-                    {...register("country", {
-                      required: {
-                        value: true,
-                        message: "country is required",
-                      },
-                    })}
-                  />
-                  <span className="err">{errors.country?.message}</span>
-                </div> */}
+//               <form className="form" onSubmit={DocumentDetailsRegisterHandleSubmit(documentDetailsonSubmit)}>
+//                 {/* <div className="inputContainer">
+//                   <Location className="user" style={{ width: "40px" }} />
+//                   <input
+//                     className="field"
+//                     type="text"
+//                     placeholder="Country"
+//                     {...register("country", {
+//                       required: {
+//                         value: true,
+//                         message: "country is required",
+//                       },
+//                     })}
+//                   />
+//                   <span className="err">{errors.country?.message}</span>
+//                 </div> */}
 
-                <div className="inputContainer">
-                  <div className="iconCircle user">
-                    <Profile className="" style={{ width: "40px" }} />
-                  </div>
-                  <input
-                    className="field moreHeight"
-                    type="text"
-                    disabled
-                    placeholder="Government issued ID card"
-                    // {...DocumentDetailsRegister("id", {
-                    //   required: {
-                    //     value: false,
-                    //     message: "password is required",
-                    //   },
-                    // })}
-                  />
-                  <label className="checkboxContainer user2">
-                    <div className="d-flex">
-                      <input
-                        name="document"
-                        type="radio"
-                        value= 'ID'
-                        // defaultChecked
-                        {...DocumentDetailsRegister("document", {
-                      required: false,
-                    })}
-                        id="acceptTerms"
-                        className={`form-check-input ${
-                          errors.acceptTerms ? "is-invalid" : ""
-                        }`}
-                      />
-                      <span className="checkmark"></span>
-                    </div>
-                  </label>
-                </div>
+//                 <div className="inputContainer">
+//                   <div className="iconCircle user">
+//                     <Profile className="" style={{ width: "40px" }} />
+//                   </div>
+//                   <input
+//                     className="field moreHeight"
+//                     type="text"
+//                     disabled
+//                     placeholder="Government issued ID card"
+//                   // {...DocumentDetailsRegister("id", {
+//                   //   required: {
+//                   //     value: false,
+//                   //     message: "password is required",
+//                   //   },
+//                   // })}
+//                   />
+//                   <label className="checkboxContainer user2">
+//                     <div className="d-flex">
+//                       <input
+//                         name="document"
+//                         type="radio"
+//                         value='ID'
+//                         // defaultChecked
+//                         {...DocumentDetailsRegister("document", {
+//                           required: false,
+//                         })}
+//                         id="acceptTerms"
+//                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""
+//                           }`}
+//                       />
+//                       <span className="checkmark"></span>
+//                     </div>
+//                   </label>
+//                 </div>
 
-                <div className="inputContainer">
-                  <div className="iconCircle user">
-                    <Paper className="" style={{ width: "40px" }} />
-                  </div>
-                  <input
-                    className="field moreHeight"
-                    type="text"
-                    disabled
-                    placeholder="PassPort"
-                    // {...DocumentDetailsRegister("passport", {
-                    //   required: {
-                    //     value: false,
-                    //     message: "password is required",
-                    //   },
-                    // })}
-                  />
-                  <label className="checkboxContainer user2">
-                    <div className="d-flex">
-                      <input
-                        name="document"
-                        type="radio"
-                        value={'passport'}
-                        // defaultChecked
-                        {...DocumentDetailsRegister("document", {
-                      required: false,
-                    })}
-                        id="acceptTerms"
-                        className={`form-check-input ${
-                          errors.acceptTerms ? "is-invalid" : ""
-                        }`}
-                      />
-                      <span className="checkmark"></span>
-                    </div>
-                  </label>
-                </div>
+//                 <div className="inputContainer">
+//                   <div className="iconCircle user">
+//                     <Paper className="" style={{ width: "40px" }} />
+//                   </div>
+//                   <input
+//                     className="field moreHeight"
+//                     type="text"
+//                     disabled
+//                     placeholder="PassPort"
+//                   // {...DocumentDetailsRegister("passport", {
+//                   //   required: {
+//                   //     value: false,
+//                   //     message: "password is required",
+//                   //   },
+//                   // })}
+//                   />
+//                   <label className="checkboxContainer user2">
+//                     <div className="d-flex">
+//                       <input
+//                         name="document"
+//                         type="radio"
+//                         value={'passport'}
+//                         // defaultChecked
+//                         {...DocumentDetailsRegister("document", {
+//                           required: false,
+//                         })}
+//                         id="acceptTerms"
+//                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""
+//                           }`}
+//                       />
+//                       <span className="checkmark"></span>
+//                     </div>
+//                   </label>
+//                 </div>
 
-                <div className="inputContainer">
-                  <div className="iconCircle user">
-                    <Paper2 className="" style={{ width: "40px" }} />
-                  </div>
-                  <input
-                  disabled
-                    className="field moreHeight"
-                    type="text"
-                    value= 'driverLicense'
-                    placeholder="Driver’s license"
-                    // {...DocumentDetailsRegister("drivingLicence", {
-                    //   required: {
-                    //     value: false,
-                    //     message: "password is required",
-                    //   },
-                    // })}
-                  />
-                  <label className="checkboxContainer user2">
-                    <div className="d-flex">
-                      <input
-                        name="document"
-                        type="radio"
-                        value= 'DriverLicense'
-                        // defaultChecked
-                        {...DocumentDetailsRegister("document", {
-                      required: false,
-                    })}
-                        id="acceptTerms"
-                        className={`form-check-input ${
-                          errors.acceptTerms ? "is-invalid" : ""
-                        }`}
-                      />
-                      <span className="checkmark"></span>
-                    </div>
-                  </label>
-                </div>
+//                 <div className="inputContainer">
+//                   <div className="iconCircle user">
+//                     <Paper2 className="" style={{ width: "40px" }} />
+//                   </div>
+//                   <input
+//                     disabled
+//                     className="field moreHeight"
+//                     type="text"
+//                     value='driverLicense'
+//                     placeholder="Driver’s license"
+//                   // {...DocumentDetailsRegister("drivingLicence", {
+//                   //   required: {
+//                   //     value: false,
+//                   //     message: "password is required",
+//                   //   },
+//                   // })}
+//                   />
+//                   <label className="checkboxContainer user2">
+//                     <div className="d-flex">
+//                       <input
+//                         name="document"
+//                         type="radio"
+//                         value='DriverLicense'
+//                         // defaultChecked
+//                         {...DocumentDetailsRegister("document", {
+//                           required: false,
+//                         })}
+//                         id="acceptTerms"
+//                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""
+//                           }`}
+//                       />
+//                       <span className="checkmark"></span>
+//                     </div>
+//                   </label>
+//                 </div>
 
-                <div className="buttonBox">
-                  <Signup
-                    className="mt-4"
-                    type="submit"
-                    // onClick={() => setStep(1)}
-                  >
-                    {mutation.isLoading ? (
-                      <Spinner animation="border" variant="light" />
-                    ) : (
-                      "Continue"
-                    )}
-                  </Signup>
-                </div>
-              </form>
-            </div>
-          </Formdiv>
-        </div>
-      )}
-      {step === 1 && (
-        <div>
-          <div className="descriptionText">
-            <p>Upload Document for Verification.</p>
-          </div>
+//                 <div className="buttonBox">
+//                   <Signup
+//                     className="mt-4"
+//                     type="submit"
+//                   // onClick={() => setStep(1)}
+//                   >
+//                     {mutation.isLoading ? (
+//                       <Spinner animation="border" variant="light" />
+//                     ) : (
+//                       "Continue"
+//                     )}
+//                   </Signup>
+//                 </div>
+//               </form>
+//             </div>
+//           </Formdiv>
+//         </div>
+//       )}
+//       {step === 1 && (
+//         <div>
+//           <div className="descriptionText">
+//             <p>Upload Document for Verification.</p>
+//           </div>
 
-          <Formdiv>
-            <div className="">
-              {/* <div className="box"> */}
+//           <Formdiv>
+//             <div className="">
+//               {/* <div className="box"> */}
 
-              <form className="form" onSubmit={DocumentDetailsRegisterHandleSubmit(documentDetailsonSubmit)}>
+//               <form className="form" onSubmit={DocumentDetailsRegisterHandleSubmit(documentDetailsonSubmit)}>
 
-              <div className="inputContainer">
-                  <input
-                    className="field moreHeight"
-                    type="text"
-                    disabled
-                    placeholder="Auto capture"
-                  />
-                  <label className="checkboxContainer user2">
-                    <div className="d-flex">
-                      <input
-                        // name="AutoCapture"
-                        type="radio"
-                        value= 'true'
-                        defaultChecked
-                        onClick={() => setAutoCapture(true)}
-                        {...DocumentDetailsRegister("AutoCapture", {
-                      required: false,
-                    })}
-                        id="acceptTerms"
-                        className={`form-check-input ${
-                          errors.acceptTerms ? "is-invalid" : ""
-                        }`}
-                      />
-                      <span className="checkmark"></span>
-                    </div>
-                  </label>
-                </div>
+//                 <div className="inputContainer">
+//                   <input
+//                     className="field moreHeight"
+//                     type="text"
+//                     disabled
+//                     placeholder="Auto capture"
+//                   />
+//                   <label className="checkboxContainer user2">
+//                     <div className="d-flex">
+//                       <input
+//                         // name="AutoCapture"
+//                         type="radio"
+//                         value='true'
+//                         defaultChecked
+//                         onClick={() => setAutoCapture(true)}
+//                         {...DocumentDetailsRegister("AutoCapture", {
+//                           required: false,
+//                         })}
+//                         id="acceptTerms"
+//                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""
+//                           }`}
+//                       />
+//                       <span className="checkmark"></span>
+//                     </div>
+//                   </label>
+//                 </div>
 
-              <div className="inputContainer">
-                  <input
-                    className="field moreHeight"
-                    type="text"
-                    disabled
-                    placeholder="Manual capture"
-                  />
-                  <label className="checkboxContainer user2">
-                    <div className="d-flex">
-                      <input
-                        // defaultChecked
-                        // name="AutoCapture"
-                        type="radio"
-                        value= 'false'
-                        onClick={() => setAutoCapture(false)}
-                        {...DocumentDetailsRegister("AutoCapture", {
-                      required: false,
-                    })}
-                        id="acceptTerms"
-                        className={`form-check-input ${
-                          errors.acceptTerms ? "is-invalid" : ""
-                        }`}
-                      />
-                      <span className="checkmark"></span>
-                    </div>
-                  </label>
-                </div>
+//                 <div className="inputContainer">
+//                   <input
+//                     className="field moreHeight"
+//                     type="text"
+//                     disabled
+//                     placeholder="Manual capture"
+//                   />
+//                   <label className="checkboxContainer user2">
+//                     <div className="d-flex">
+//                       <input
+//                         // defaultChecked
+//                         // name="AutoCapture"
+//                         type="radio"
+//                         value='false'
+//                         onClick={() => setAutoCapture(false)}
+//                         {...DocumentDetailsRegister("AutoCapture", {
+//                           required: false,
+//                         })}
+//                         id="acceptTerms"
+//                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""
+//                           }`}
+//                       />
+//                       <span className="checkmark"></span>
+//                     </div>
+//                   </label>
+//                 </div>
 
-                <div className="uploadBox">
-                <div className="UploadContainer" onClick={() => {
-                      startCapture();
-                      setSelected('DocumentFront')
-                    }}>
-                    <Upload className="set" style={{ width: "40px" }} />
-                  <input
-                    className="uploadfield"
-                    type="text"
-                    disabled
-                    placeholder="Upload front"
-                    // {...register("cpassword", {
-                    //   required: {
-                    //     value: true,
-                    //     message: "password is required",
-                    //   },
-                    // })}
-                  />
-                 
-                </div>
+//                 <div className="uploadBox">
+//                   <div className="UploadContainer" onClick={() => {
+//                     startCapture();
+//                     setSelected('DocumentFront')
+//                   }}>
+//                     <Upload className="set" style={{ width: "40px" }} />
+//                     <input
+//                       className="uploadfield"
+//                       type="text"
+//                       disabled
+//                       placeholder="Upload front"
+//                     // {...register("cpassword", {
+//                     //   required: {
+//                     //     value: true,
+//                     //     message: "password is required",
+//                     //   },
+//                     // })}
+//                     />
 
-                <div className="UploadContainer" onClick={() => {
-                      startCapture();
-                      setSelected('DocumentBack')
-                    }}>
-                    <Upload className="set" style={{ width: "40px" }} />
-                  <input
-                    className="uploadfield"
-                    type="text"
-                    disabled
-                    placeholder="Upload Back"
-                    // {...register("cpassword", {
-                    //   required: {
-                    //     value: true,
-                    //     message: "password is required",
-                    //   },
-                    // })}
-                  />
-                 
-                </div>
-                </div>
+//                   </div>
 
-                {/* <div className="inputContainer">
-                  <Paper className="user" style={{ width: "40px" }} />
-                  <input
-                    className="field"
-                    type="text"
-                    placeholder="ID number"
-                    // {...register("id", {
-                    //   required: {
-                    //     value: true,
-                    //     message: "ID number is required",
-                    //   },
-                    // })}
-                  />
-                  <span className="err">{errors.id?.message}</span>
-                </div>
+//                   <div className="UploadContainer" onClick={() => {
+//                     startCapture();
+//                     setSelected('DocumentBack')
+//                   }}>
+//                     <Upload className="set" style={{ width: "40px" }} />
+//                     <input
+//                       className="uploadfield"
+//                       type="text"
+//                       disabled
+//                       placeholder="Upload Back"
+//                     // {...register("cpassword", {
+//                     //   required: {
+//                     //     value: true,
+//                     //     message: "password is required",
+//                     //   },
+//                     // })}
+//                     />
 
-                <div className="inputContainer">
-                  <Calendar className="user" style={{ width: "40px" }} />
-                  <input
-                    className="field"
-                    type="text"
-                    placeholder="Date of issuance"
-                    // {...register("date", {
-                    //   required: {
-                    //     value: true,
-                    //     message: "Date of issuance is required",
-                    //   },
-                    // })}
-                  />
-                  <span className="err">{errors.date?.message}</span>
-                </div>
+//                   </div>
+//                 </div>
 
-                <div className="inputContainer">
-                  <Calendar className="user" style={{ width: "40px" }} />
-                  <input
-                    className="field"
-                    type="text"
-                    placeholder="Expiry date"
-                    // {...register("expdate", {
-                    //   required: {
-                    //     value: true,
-                    //     message: "Date of expiry is required",
-                    //   },
-                    // })}
-                  />
-                  <span className="err">{errors.expdate?.message}</span>
-                </div>
+//                 {/* <div className="inputContainer">
+//                   <Paper className="user" style={{ width: "40px" }} />
+//                   <input
+//                     className="field"
+//                     type="text"
+//                     placeholder="ID number"
+//                     // {...register("id", {
+//                     //   required: {
+//                     //     value: true,
+//                     //     message: "ID number is required",
+//                     //   },
+//                     // })}
+//                   />
+//                   <span className="err">{errors.id?.message}</span>
+//                 </div>
 
-                <div className="inputContainer">
-                  <Calendar className="user" style={{ width: "40px" }} />
-                  <input
-                    className="field"
-                    type="text"
-                    placeholder="Issuing body (optional)"
-                    // {...register("issuingBody")}
-                  />
-                  <span className="err">{errors.issuingBody?.message}</span>
-                </div> */}
+//                 <div className="inputContainer">
+//                   <Calendar className="user" style={{ width: "40px" }} />
+//                   <input
+//                     className="field"
+//                     type="text"
+//                     placeholder="Date of issuance"
+//                     // {...register("date", {
+//                     //   required: {
+//                     //     value: true,
+//                     //     message: "Date of issuance is required",
+//                     //   },
+//                     // })}
+//                   />
+//                   <span className="err">{errors.date?.message}</span>
+//                 </div>
 
-                <div className="buttonBox">
-                  <Signup
-                    className="mt-4"
-                    type="button"
-                    onClick={() => setStep(1)}
-                  >
-                    {mutation.isLoading ? (
-                      <Spinner animation="border" variant="light" />
-                    ) : (
-                      "Continue"
-                    )}
-                  </Signup>
-                </div>
-              </form>
-            </div>
-          </Formdiv>
-        </div>
-      )}
-    </>
-  );
-};
+//                 <div className="inputContainer">
+//                   <Calendar className="user" style={{ width: "40px" }} />
+//                   <input
+//                     className="field"
+//                     type="text"
+//                     placeholder="Expiry date"
+//                     // {...register("expdate", {
+//                     //   required: {
+//                     //     value: true,
+//                     //     message: "Date of expiry is required",
+//                     //   },
+//                     // })}
+//                   />
+//                   <span className="err">{errors.expdate?.message}</span>
+//                 </div>
+
+//                 <div className="inputContainer">
+//                   <Calendar className="user" style={{ width: "40px" }} />
+//                   <input
+//                     className="field"
+//                     type="text"
+//                     placeholder="Issuing body (optional)"
+//                     // {...register("issuingBody")}
+//                   />
+//                   <span className="err">{errors.issuingBody?.message}</span>
+//                 </div> */}
+
+//                 <div className="buttonBox">
+//                   <Signup
+//                     className="mt-4"
+//                     type="button"
+//                     onClick={() => setStep(1)}
+//                   >
+//                     {mutation.isLoading ? (
+//                       <Spinner animation="border" variant="light" />
+//                     ) : (
+//                       "Continue"
+//                     )}
+//                   </Signup>
+//                 </div>
+//               </form>
+//             </div>
+//           </Formdiv>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
 
 const Selfie = () => {
   const {
@@ -1383,49 +1436,46 @@ const Selfie = () => {
 
   return (
     <>
-          <div className="descriptionText">
-            <p>Upload Selfie Verification.</p>
-          </div>
+      <div className="descriptionText">
+        <p>Upload Selfie Verification.</p>
+      </div>
 
-          <Formdiv>
-            <div className="">
-              <form className="form" onSubmit={handleSubmit(onSubmit)}>
-                <SelfieBox className="">
-                <div className="selfieContainer">
-                    <Camera className="set" style={{ width: "40px" }} />
-                  <input
-                    className="uploadfield"
-                    type="text"
-                    placeholder=""
-                    {...register("cpassword", {
-                      required: {
-                        value: true,
-                        message: "password is required",
-                      },
-                    })}
-                  />
-                 
-                </div>
+      <Formdiv>
+        <div className="">
+          <form className="form" onSubmit={handleSubmit(onSubmit)}>
+            <SelfieBox className="">
+              <div className="selfieContainer">
+                <Camera className="set" style={{ width: "40px" }} />
+                <input
+                  className="uploadfield"
+                  type="text"
+                  placeholder=""
+                  {...register("cpassword", {
+                    required: {
+                      value: true,
+                      message: "password is required",
+                    },
+                  })}
+                />
+              </div>
+            </SelfieBox>
 
-                </SelfieBox>
-   
-
-                <div className="buttonBox">
-                  <Signup
-                    className="mt-4"
-                    type="button"
-                    // onClick={() => setStep(1)}
-                  >
-                    {mutation.isLoading ? (
-                      <Spinner animation="border" variant="light" />
-                    ) : (
-                      "Continue"
-                    )}
-                  </Signup>
-                </div>
-              </form>
+            <div className="buttonBox">
+              <Signup
+                className="mt-4"
+                type="button"
+                // onClick={() => setStep(1)}
+              >
+                {mutation.isLoading ? (
+                  <Spinner animation="border" variant="light" />
+                ) : (
+                  Continue
+                )}
+              </Signup>
             </div>
-          </Formdiv>
+          </form>
+        </div>
+      </Formdiv>
     </>
   );
 };
