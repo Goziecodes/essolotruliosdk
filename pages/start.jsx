@@ -944,7 +944,8 @@ export default function Register() {
           />
         )}
 
-        {activeTab === "selfie" && <Selfie spin={spin} selfieComplete={selfieComplete}  startCapture={startCapture} onVerifyUser={onVerifyUser} result={AsyncVerifyMutation.data}
+        {activeTab === "selfie" && <Selfie spin={spin} selfieComplete={selfieComplete}  startCapture={startCapture} onVerifyUser={onVerifyUser} result={AsyncVerifyMutation.data} loading={AsyncVerifyMutation.isLoading}
+
 />}
       </Container>
     </>
@@ -1348,7 +1349,7 @@ export default function Register() {
 //   );
 // };
 
-const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result}) => {
+const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loading}) => {
   const {
     register,
     handleSubmit,
@@ -1495,11 +1496,11 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result}) => {
                 onClick={() => onVerifyUser()}
                 // onClick={() => setStep(1)}
               >
-                {mutation.isLoading ? (
-                  <Spinner animation="border" variant="light" />
-                ) : (
-                  'Continue'
-                )}
+               {
+                    loading ? 
+                   <Spinner animation="border" variant="light" /> :
+                    "Continue"
+                    }
               </Signup>
             </div>
           </form>
