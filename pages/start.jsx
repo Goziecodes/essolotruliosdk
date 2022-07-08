@@ -26,6 +26,10 @@ import Hide from "../public/Iconly/Light/Hide.svg";
 import DocumentDetails from "../components/DocumentDetails";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
+import { FiUploadCloud } from 'react-icons/fi';
+import { FaCameraRetro } from 'react-icons/fa';
+import { FaCheckCircle } from 'react-icons/fa';
+
 
 const Container = styled.div`
   width: 100%;
@@ -430,6 +434,7 @@ export default function Register() {
   const [passport, setPassport] = useState("");
   const [docFrontComplete, setDocFrontComplete] = useState(false);
   const [docBackComplete, setDocBackComplete] = useState(false);
+  const [selfieComplete, setSelfieComplete] = useState(false);
   const [transactionID, setTransactionID] = useState("");
   const [documentID, setDocumentID] = useState("");
   const [instanceID, setInstanceID] = useState("");
@@ -537,6 +542,8 @@ export default function Register() {
         Document: {
           DocumentFrontImage: imageFront,
           DocumentBackImage: imageBack,
+          LivePhoto: selfie,
+          DocumentType: "IdentityCard"
         },
         // "Passport": {},
         // "Business": {},
@@ -658,6 +665,7 @@ export default function Register() {
 
 
   async function startCapture(doctype) {
+    console.log('starting capture')
     if (!isSDKInited) {
       console.log('Capture SDK is not initialized');
       return;
@@ -725,11 +733,13 @@ export default function Register() {
 
   function startSelfie(shouldCollectGeo, token) {
     // Capture Selfie
+    setSpin(()=> 'selfie')
+
     StartAcuantSelfieCapture(
       getIsAutoCapture(),
       shouldCollectGeo,
       startProcess,
-      showImage,
+      showLiveImage,
       showError,
       token
     );
@@ -786,6 +796,12 @@ export default function Register() {
     setSpin(() => '')
     setDocBackComplete(true)
     setImageBack(result.image.split(",")[1]);
+  }
+
+  function showLiveImage(result) {
+    setSpin(() => '')
+    setSelfieComplete(true)
+    setSelfie(result.image.split(",")[1]);
   }
 
   function endProcess() {
@@ -924,10 +940,12 @@ export default function Register() {
             spin={spin}
             loading={AsyncVerifyMutation.isLoading}
             result={AsyncVerifyMutation.data}
+            setActiveTab={setActiveTab}
           />
         )}
 
-        {activeTab === "selfie" && <Selfie />}
+        {activeTab === "selfie" && <Selfie spin={spin} selfieComplete={selfieComplete}  startCapture={startCapture} onVerifyUser={onVerifyUser} result={AsyncVerifyMutation.data}
+/>}
       </Container>
     </>
   );
@@ -1330,7 +1348,7 @@ export default function Register() {
 //   );
 // };
 
-const Selfie = () => {
+const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result}) => {
   const {
     register,
     handleSubmit,
@@ -1343,12 +1361,13 @@ const Selfie = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 335px;
-  height: 339px;
+  width: 235px;
+  height: 239px;
   margin: 0 auto;
 
 
     .selfieContainer {
+
       width: 100%;
       height: 100%;
   display: flex;
@@ -1362,8 +1381,9 @@ const Selfie = () => {
   box-shadow: inset -4px -4px 8px #FFFFFF, inset 4px 4px 8px rgba(0, 0, 0, 0.16);
   margin: 0px 10px;
 
+
   .set{
-    position: absolute;
+    // position: absolute;
   }
 
 
@@ -1443,10 +1463,18 @@ const Selfie = () => {
       <Formdiv>
         <div className="">
           <form className="form" onSubmit={handleSubmit(onSubmit)}>
-            <SelfieBox className="">
+            <SelfieBox className="" onClick={() => {
+                    // setSelected('selfie')
+                    startCapture('LivePhoto');
+                  }}>
               <div className="selfieContainer">
-                <Camera className="set" style={{ width: "40px" }} />
-                <input
+                {/* <Camera className="set" style={{ width: "40px" }} /> */}
+                <div>
+                      {
+                        spin === 'selfie' ? <Spinner animation="border" size="lg" /> : selfieComplete === true ? <FaCheckCircle size={50} /> : <FaCameraRetro className="set" size={50} />
+                      }
+                    </div>    
+                  {/* <input
                   className="uploadfield"
                   type="text"
                   placeholder=""
@@ -1456,7 +1484,7 @@ const Selfie = () => {
                       message: "password is required",
                     },
                   })}
-                />
+                /> */}
               </div>
             </SelfieBox>
 
@@ -1464,16 +1492,31 @@ const Selfie = () => {
               <Signup
                 className="mt-4"
                 type="button"
+                onClick={() => onVerifyUser()}
                 // onClick={() => setStep(1)}
               >
                 {mutation.isLoading ? (
                   <Spinner animation="border" variant="light" />
                 ) : (
-                  Continue
+                  'Continue'
                 )}
               </Signup>
             </div>
           </form>
+
+          <div className="mt-4">
+         <h4>
+          {
+            result ? (
+              <>
+              <p>TransactionId: {result?.data?.TransactionID}</p>
+              <p>Status: {result?.data?.Record?.RecordStatus}</p>
+              </>
+               ) : null
+          }
+            
+          </h4>
+         </div>
         </div>
       </Formdiv>
     </>

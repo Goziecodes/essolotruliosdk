@@ -15,7 +15,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 
 
-export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result }) {
+export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result, setActiveTab }) {
   const [step, setStep] = useState(0);
   const [document, setDocument] = useState('ID');
 
@@ -660,7 +660,8 @@ letter-spacing: 0.005em;
                   <Signup
                     className="mt-4"
                     type="button"
-                    onClick={() => onVerifyUser()}
+                    // onClick={() => onVerifyUser()}
+                    onClick={() => setActiveTab(()=> "selfie")}
                   >
                     {
                     loading ? 
