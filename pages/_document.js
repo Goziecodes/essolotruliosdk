@@ -1,4 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 import { ServerStyleSheet } from 'styled-components'
 
 export default class MyDocument extends Document {
@@ -26,5 +27,20 @@ export default class MyDocument extends Document {
     } finally {
       sheet.seal()
     }
+  }
+
+  render() {
+    return (
+      <Html>
+        <Head>
+        {/* <Script src="./GlobalGatewayImageCapture.js"/> */}
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+          {/* <Script src="./GlobalGatewayImageCapture.js" strategy="afterInteractive"/> */}
+        </body>
+      </Html>
+    )
   }
 }

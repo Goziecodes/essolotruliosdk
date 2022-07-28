@@ -414,6 +414,8 @@ export default function Register() {
   const [activeTab, setActiveTab] = useState("details");
   const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
   const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
+  // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
+  // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   const [sdkToken, setSdkToken] = useState("");
   const [isSDKInited, setIsSDKInited] = useState(false);
   const [personalDetails, setPersonalDetails] = useState({
@@ -563,13 +565,16 @@ export default function Register() {
     };
 
     window.onAcuantSdkLoaded = () => {
+
       const successHelper = () => {
         setIsSDKInited(true);
-        // console.log(isSDKInited, "isSDKInited");
+        console.log("SDKInited");
       };
-      const failHelper = () => {
-        // console.error('Fail to init sdk');
+
+      const failHelper = (error) => {
+        console.error('Fail to init sdk');
         console.log("Fail to init sdk");
+        console.log(error, "Fail to init sdk");
         // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
       };
       InitSDK(username, password, successHelper, failHelper);
@@ -811,7 +816,8 @@ export default function Register() {
 
   return (
     <>
-      <Script src="./GlobalGatewayCapturePublicAcuant/GlobalGatewayImageCapture.js" />
+      {/* <Script src="./GlobalGatewayCapturePublicAcuant/GlobalGatewayImageCapture.js" /> */}
+      <Script src="./GlobalGatewayImageCapture.js" />
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
