@@ -685,14 +685,14 @@ export default function Register() {
     var token = sdkToken;
 
     if (selectedType == "DocumentFront") {
-      startDocumentFrontCapture(shouldCollectGeo, token);
+      startDocumentFrontCapture(shouldCollectGeo, token, 'en-US');
     } else if (selectedType == "DocumentBack") {
       setSpin(()=> 'docBack')
-      startDocumentBackCapture(shouldCollectGeo);
+      startDocumentBackCapture(shouldCollectGeo, token, 'en-US');
     } else if (selectedType == "LivePhoto") {
-      startSelfie(shouldCollectGeo, token);
+      startSelfie(shouldCollectGeo, token, 'en-US');
     } else if (selectedType == "Passport") {
-      startPassport(shouldCollectGeo, token);
+      startPassport(shouldCollectGeo, token, 'en-US');
     }
   }
 
@@ -707,7 +707,9 @@ export default function Register() {
       startProcess('docFront'),
       showFrontImage,
       showError,
-      token
+      token,
+      'en-US',
+      'en-US'
     );
   }
 
@@ -720,7 +722,10 @@ export default function Register() {
       shouldCollectGeo,
       startProcess,
       showBackImage,
-      showError
+      showError,
+      token,
+      'en-US',
+      'en-US'
     );
   }
 
@@ -732,7 +737,9 @@ export default function Register() {
       startProcess,
       showImage,
       showError,
-      token
+      token,
+      'en-US',
+      'en-US'
     );
   }
 
@@ -746,7 +753,9 @@ export default function Register() {
       startProcess,
       showLiveImage,
       showError,
-      token
+      token,
+      'en-US',
+      'en-US'
     );
   }
 
@@ -792,6 +801,7 @@ export default function Register() {
   }
 
   function showFrontImage(result) {
+    console.log('done')
     setSpin(() => '')
     setDocFrontComplete(true)
     setImageFront(result.image.split(",")[1]);
