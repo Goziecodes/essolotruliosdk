@@ -697,6 +697,12 @@ export default function Register() {
   }
 
   function startDocumentFrontCapture(shouldCollectGeo, token) {
+    console.log({
+      shouldCollectGeo,
+      showFrontImage,
+      showError,
+      token,})
+
     setSpin(()=> 'docFront')
 
     // Capture Driver Licence and ID Cards.
@@ -713,7 +719,7 @@ export default function Register() {
     );
   }
 
-  function startDocumentBackCapture(shouldCollectGeo) {
+  function startDocumentBackCapture(shouldCollectGeo, token) {
     // Capture Driver Licence and ID Cards.
     setSpin(()=> 'docBack')
 
@@ -776,7 +782,6 @@ export default function Register() {
 
   function showImage(result) {
     console.log(selected, "sels");
-    return;
     console.log(result, "result");
 
     if (selected == "DocumentFront" && result) {
