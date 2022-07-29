@@ -697,12 +697,8 @@ export default function Register() {
   }
 
   function startDocumentFrontCapture(shouldCollectGeo, token) {
-    console.log({
-      shouldCollectGeo,
-      showFrontImage,
-      showError,
-      token,})
-
+    console.log('docfront started')
+    console.log('sdunjfknndghfbvjnhcjb dfkvjcnvj ****************docfront started')
     setSpin(()=> 'docFront')
 
     // Capture Driver Licence and ID Cards.
@@ -710,7 +706,7 @@ export default function Register() {
     StartAcuantFrontDocumentCapture(
       getIsAutoCapture(),
       shouldCollectGeo,
-      startProcess('docFront'),
+      startProcess,
       showFrontImage,
       showError,
       token,
