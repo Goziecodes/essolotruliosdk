@@ -545,7 +545,7 @@ export default function Register() {
         Document: {
           DocumentFrontImage: imageFront,
           DocumentBackImage: imageBack,
-          LivePhoto: selfie,
+          // LivePhoto: selfie,
           DocumentType: "IdentityCard"
         },
         // "Passport": {},
