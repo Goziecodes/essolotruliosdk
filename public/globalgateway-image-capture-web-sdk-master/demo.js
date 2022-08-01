@@ -108,7 +108,15 @@
             }
         }
         function startDocumentFrontCapture(shouldCollectGeo, token, locale) {
-            StartAcuantFrontDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token, locale, defaultLocale);
+            StartAcuantFrontDocumentCapture(
+                getIsAutoDropDown(),
+                shouldCollectGeo,
+                startProcess,
+                showImage,
+                showError,
+                token, 
+                locale,
+                defaultLocale);
         }
         function startDocumentBackCapture(shouldCollectGeo, token, locale) {
             StartAcuantBackDocumentCapture(getIsAutoDropDown(), shouldCollectGeo, startProcess, showImage, showError, token, locale, defaultLocale);

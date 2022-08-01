@@ -480,10 +480,11 @@ export default function Register() {
 
   const AsyncVerifyMutation = useMutation(
     async (userDetails) => {
-      return await axios.post(
+      return await axios.get(
         // "https://api.globaldatacompany.com/verifications/v1/verify",
-        "/api/transaction",
-        userDetails
+        // "/api/transaction",
+        "https://catfact.ninja/fact",
+        // userDetails
       );
     },
     {
@@ -522,16 +523,16 @@ export default function Register() {
   };
 
   const onVerifyUser = (data) => {
-    console.log(imageFront, "imgf");
-    console.log(imageBack, "imgb");
-    console.log(personalDetails, "pds");
+    // console.log(imageFront, "imgf");
+    // console.log(imageBack, "imgb");
+    // console.log(personalDetails, "pds");
 
     AsyncVerifyMutation.mutate({
       AcceptTruliooTermsAndConditions: true,
       CleansedAddress: false,
       VerboseMode: true,
       ConfigurationName: "Identity Verification",
-      CallBackUrl:"https://api.globaldatacompany.com/connection/v1/async-callback",
+      // CallBackUrl:"https://api.globaldatacompany.com/connection/v1/async-callback",
       CountryCode: "NG",
       DataFields: {
         PersonInfo: {
@@ -1471,7 +1472,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
     });
     // mutation.mutate(data);
   };
-
+console.log(result, 'data1')
   return (
     <>
       <div className="descriptionText">
@@ -1527,8 +1528,11 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
           {
             result ? (
               <>
-              <p>TransactionId: {result?.data?.TransactionID}</p>
-              <p>Status: {result?.data?.Record?.RecordStatus}</p>
+              <p>Verification complete</p>
+              {/* <p>TransactionId: {result?.data?.fact}</p>
+              <p>Status: {result?.data?.length}</p> */}
+              {/* <p>TransactionId: {result?.data?.TransactionID}</p>
+              <p>Status: {result?.data?.Record?.RecordStatus}</p> */}
               </>
                ) : null
           }
