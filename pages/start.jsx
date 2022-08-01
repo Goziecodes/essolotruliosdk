@@ -482,9 +482,9 @@ export default function Register() {
     async (userDetails) => {
       return await axios.get(
         // "https://api.globaldatacompany.com/verifications/v1/verify",
-        // "/api/transaction",
-        "https://catfact.ninja/fact",
-        // userDetails
+        "/api/transaction",
+        // "https://catfact.ninja/fact",
+        userDetails
       );
     },
     {
