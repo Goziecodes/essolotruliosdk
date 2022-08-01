@@ -480,7 +480,7 @@ export default function Register() {
 
   const AsyncVerifyMutation = useMutation(
     async (userDetails) => {
-      return await axios.get(
+      return await axios.post(
         // "https://api.globaldatacompany.com/verifications/v1/verify",
         "/api/transaction",
         // "https://catfact.ninja/fact",
