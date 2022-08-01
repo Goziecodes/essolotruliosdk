@@ -545,7 +545,7 @@ export default function Register() {
         Document: {
           DocumentFrontImage: imageFront,
           DocumentBackImage: imageBack,
-          // LivePhoto: selfie,
+          LivePhoto: selfie,
           DocumentType: "IdentityCard"
         },
         // "Passport": {},
@@ -1529,10 +1529,9 @@ console.log(result, 'data1')
             result ? (
               <>
               <p>Verification complete</p>
-              {/* <p>TransactionId: {result?.data?.fact}</p>
-              <p>Status: {result?.data?.length}</p> */}
-              {/* <p>TransactionId: {result?.data?.TransactionID}</p>
-              <p>Status: {result?.data?.Record?.RecordStatus}</p> */}
+              <p>TransactionId: {result?.data?.TransactionID}</p>
+              <p>Status: {result?.data?.Record?.RecordStatus}</p>
+              <p>Status: {result?.data?.Record?.TransactionRecordID}</p>
               </>
                ) : null
           }
