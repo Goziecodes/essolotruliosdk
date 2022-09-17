@@ -496,7 +496,7 @@ const userDetails = user !== '' && JSON.parse(user);
     const formData = getFormData(userDetails);
       return await axios.post(
         // "https://api.globaldatacompany.com/verifications/v1/verify",
-        https://tmp-msia-appgw.azure-api.net/nestor
+        "https://tmp-msia-appgw.azure-api.net/nestor",
         // "http://localhost:3000/trulio/sdkverify",
         // "/api/transaction",
         formData,
