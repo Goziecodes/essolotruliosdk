@@ -301,9 +301,9 @@ letter-spacing: 0.005em;
 `;
 
 export default function Register() {
-  const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
-  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
-  const [isSDKInited, setIsSDKInited] = useState(false);
+  // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
+  // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
+  // const [isSDKInited, setIsSDKInited] = useState(false);
   console.log(isSDKInited, 'from index')
   const router = useRouter();
   // console.log(router.query, 'me')
