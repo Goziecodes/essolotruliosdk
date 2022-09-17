@@ -42,7 +42,7 @@ const Container = styled.div`
     font-style: normal;
     font-family: "Poppins", sans-serif;
     font-weight: 300;
-    font-size: 24px;
+    font-size: 20px;
     color: #8d1919;
     text-align: center;
     margin-top: 80px;
@@ -82,6 +82,8 @@ const Texts = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 50%;
+  justify-content: space-around;
 `;
 
 const Imagediv = styled.div`
@@ -318,7 +320,7 @@ export default function Register() {
     async (signupDetails) => {
       return await axios
         .post(
-          "http://localhost:3000/trulio/verifyAsync",
+          "https://companymicroservice.azurewebsites.net/api/createacompany",
           signupDetails
         )
         .catch((err) => {
@@ -330,18 +332,17 @@ export default function Register() {
       onSuccess: async (data) => {
         console.log(data.data, "success");
         let response = data.data;
-        router.push('/start')
-        // if (!response.error) {
-        //   toast.success("company registered successfully", {
-        //     position: "top-right",
-        //     autoClose: 5000,
-        //     hideProgressBar: false,
-        //     closeOnClick: true,
-        //     pauseOnHover: true,
-        //     draggable: true,
-        //     progress: undefined,
-        //   });
-        // }
+        if (!response.error) {
+          toast.success("company registered successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       },
       onError: async (error, variables, context) => {
         console.log(error, `is the error`);
@@ -361,46 +362,18 @@ export default function Register() {
   // });
 
   const onSubmit = (data) => {
-    let user = ''
-    if(typeof window !== 'undefined'){
-      user = window.sessionStorage?.getItem('userDetails') 
-   }
-   const userDetails = user !== '' && JSON.parse(user);
-
-  const verificationData =  {
-    "AcceptTruliooTermsAndConditions": true,
-    "CompanyId": userDetails.CompanyId,
-    "ProjectDataId": userDetails.ProjectDataId,
-    "CleansedAddress": false,
-    "ConfigurationName": "Identity Verification",
-    "CountryCode": userDetails.CountryCode,
-    "DataFields": {
-        "PersonInfo": {
-            "FirstGivenName": userDetails.FirstGivenName,
-            "FirstSurName": userDetails.FirstSurName,
-            "MiddleName": userDetails.MiddleName,
-            "DayOfBirth": userDetails.DayOfBirth,
-            "MonthOfBirth": userDetails.MonthOfBirth,
-            "YearOfBirth": userDetails.YearOfBirth
-        },
-        "Document": {
-            "DocumentType": "IdentityCard"
-        }
-    }
-}
-
-    // console.log(verificationData, "form data");
-    // delete data.confirmPassword;
-    // toast.success("company registered successfully", {
-    //   position: "top-right",
-    //   autoClose: 5000,
-    //   hideProgressBar: false,
-    //   closeOnClick: true,
-    //   pauseOnHover: true,
-    //   draggable: true,
-    //   progress: undefined,
-    // });
-    mutation.mutate(verificationData);
+    console.log(data, "form data");
+    delete data.confirmPassword;
+    toast.success("company registered successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    // mutation.mutate(data);
   };
 
   return (
@@ -420,25 +393,9 @@ export default function Register() {
           <Image src={msia} className="" alt="msia" />
 
           <div className="headerBox p-3">
-            <p className="welcomeText">Get started on the MSIA KYC Framework</p>
+            <p className="welcomeText">Verification process completed, we are reviewing your application...</p>
           </div>
 
-          <div className="descriptionText">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus
-              tempor nulla rhoncus etiam. Egestas nunc vitae justo lorem.
-              Phasellus bibendum aliquet mauris erat eleifend turpis gravida
-              lorem. Consequat risus.
-            </p>
-          </div>
-
-          <Signup className="mt-4" type="button">
-          {/* <Signup className="mt-4" type="button" onClick={onSubmit}> */}
-          <Link href="/start">
-          <a>Begin KYC Verification</a>
-        </Link>
-          
-          </Signup>
         </Texts>
 
          {/* <div style={{ position: 'relative', width: '100%', height: '100%' }}>

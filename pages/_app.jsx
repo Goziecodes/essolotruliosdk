@@ -2,6 +2,7 @@ import React from "react";
 import '../style/index.css';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
+import UserDetails from '../contexts/userdetails'
 
 
 
@@ -34,7 +35,9 @@ export default function MyApp({ Component, pageProps }) {
        <Hydrate state={pageProps.dehydratedState}>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
+        {/* <UserDetails> */}
         <Component {...pageProps} />
+        {/* </UserDetails> */}
       </ThemeProvider>
       </Hydrate>
      </QueryClientProvider>

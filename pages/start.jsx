@@ -29,6 +29,7 @@ import { useEffect } from "react";
 import { FiUploadCloud } from 'react-icons/fi';
 import { FaCameraRetro } from 'react-icons/fa';
 import { FaCheckCircle } from 'react-icons/fa';
+import {useUserDetails} from '../contexts/userdetails'
 
 
 const Container = styled.div`
@@ -411,9 +412,11 @@ const Signup = styled.button`
 `;
 
 export default function Register() {
-  const [activeTab, setActiveTab] = useState("details");
+  const [activeTab, setActiveTab] = useState("document");
   const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
   const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
+  // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
+  // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   const [sdkToken, setSdkToken] = useState("");
   const [isSDKInited, setIsSDKInited] = useState(false);
   const [personalDetails, setPersonalDetails] = useState({
@@ -428,7 +431,7 @@ export default function Register() {
   const [spin, setSpin] = useState("");
   const [autoCapture, setAutoCapture] = useState(true);
   const [imageFront, setImageFront] = useState("");
-  console.log(imageFront, 'imagefront');
+  // console.log(imageFront, 'imagefront');
   const [imageBack, setImageBack] = useState("");
   const [livePhoto, setLivePhoto] = useState("");
   const [passport, setPassport] = useState("");
@@ -439,7 +442,14 @@ export default function Register() {
   const [documentID, setDocumentID] = useState("");
   const [instanceID, setInstanceID] = useState("");
   const [selfie, setSelfie] = useState("");
+  const router = useRouter();
 
+
+  let user = ''
+  if(typeof window !== 'undefined'){
+     user = window.sessionStorage?.getItem('userDetails') 
+  }
+const userDetails = user !== '' && JSON.parse(user);
   // const username = 'dev_Trulioo_15rtRS';
   // const password = 'LxC^^E4PfVn3nMk8';
 
@@ -478,15 +488,33 @@ export default function Register() {
 
   const AsyncVerifyMutation = useMutation(
     async (userDetails) => {
+      function getFormData(userDetails) {
+        const formData = new FormData();
+        Object.keys(userDetails).forEach(key => formData.append(key, userDetails[key]));
+        return formData;
+    }
+    const formData = getFormData(userDetails);
       return await axios.post(
         // "https://api.globaldatacompany.com/verifications/v1/verify",
-        "/api/transaction",
-        userDetails
+        https://tmp-msia-appgw.azure-api.net/nestor
+        // "http://localhost:3000/trulio/sdkverify",
+        // "/api/transaction",
+        formData,
+        // {
+        //   headers: formData.getHeaders()
+
+        // }
+        // {
+        //   headers:{
+        //     ['Content-type']: `text/json`,
+        //   }
+        // }
       );
     },
     {
       onSuccess: async (data) => {
         console.log(data, "success");
+        router.push('/end')
         // let response = data?.data;
         // console.log(response.TransactionID, "response from initial verify");
         // setTransactionID(() => response?.TransactionID);
@@ -520,9 +548,10 @@ export default function Register() {
   };
 
   const onVerifyUser = (data) => {
-    console.log(imageFront, "imgf");
-    console.log(imageBack, "imgb");
-    console.log(personalDetails, "pds");
+    // console.log(imageFront, "imgf");
+    // console.log(imageBack, "imgb");
+    // console.log(personalDetails, "pds");
+    console.log(userDetails, 'useme')
 
     AsyncVerifyMutation.mutate({
       AcceptTruliooTermsAndConditions: true,
@@ -530,24 +559,32 @@ export default function Register() {
       VerboseMode: true,
       ConfigurationName: "Identity Verification",
       CallBackUrl:"https://api.globaldatacompany.com/connection/v1/async-callback",
-      CountryCode: "NG",
-      DataFields: {
-        PersonInfo: {
-          ...personalDetails,
+      CountryCode: userDetails.CountryCode,
+      // DataFields: {
+        // PersonInfo: {
+          FirstGivenName: userDetails.FirstGivenName,
+      FirstSurName: userDetails.FirstSurName,
+      MiddleName: userDetails.MiddleName,
+      DayOfBirth: userDetails.DayOfBirth,
+      MonthOfBirth: userDetails.MonthOfBirth,
+      YearOfBirth: userDetails.YearOfBirth,
+      ProjectDataId: userDetails?.ProjectDataId,
+      CompanyId: userDetails.CompanyId,
+          // ...personalDetails,
           // "FirstGivenName": data.firstName,
           // "FirstSurName": data.lastName
-        },
+        // },
         // "Location": {},
         // "Communication": {},
-        Document: {
+        // Document: {
           DocumentFrontImage: imageFront,
           DocumentBackImage: imageBack,
           LivePhoto: selfie,
-          DocumentType: "IdentityCard"
-        },
+          DocumentType: userDetails.doctype
+        // },
         // "Passport": {},
         // "Business": {},
-      },
+      // },
     });
 
     // AsyncVerifyMutation.isSuccess && setActiveTab("document");
@@ -1458,7 +1495,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
   return (
     <>
       <div className="descriptionText">
-        <p>Upload Selfie Verification.</p>
+        <p>Take Selfie.</p>
       </div>
 
       <Formdiv>
@@ -1491,21 +1528,22 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
 
             <div className="buttonBox">
               <Signup
-                className="mt-4"
+                className={`mt-4 ${!selfieComplete ? 'd-none' : ''}`}
                 type="button"
+                disabled={!selfieComplete}
                 onClick={() => onVerifyUser()}
                 // onClick={() => setStep(1)}
               >
                {
                     loading ? 
                    <Spinner animation="border" variant="light" /> :
-                    "Continue"
+                    "Submit"
                     }
               </Signup>
             </div>
           </form>
 
-          <div className="mt-4">
+          {/* <div className="mt-4">
          <h4>
           {
             result ? (
@@ -1517,7 +1555,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
           }
             
           </h4>
-         </div>
+         </div> */}
         </div>
       </Formdiv>
     </>

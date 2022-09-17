@@ -16,7 +16,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 
 export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result, setActiveTab }) {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [document, setDocument] = useState('ID');
 
   console.log({loading, result})
