@@ -418,6 +418,7 @@ export default function Register() {
   // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   const [sdkToken, setSdkToken] = useState("");
   const [isSDKInited, setIsSDKInited] = useState(false);
+  console.log(isSDKInited, 'isSDKInited')
   const [personalDetails, setPersonalDetails] = useState({
     FirstGivenName: "",
     FirstSurName: "",

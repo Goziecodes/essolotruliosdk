@@ -28,19 +28,4 @@ export default class MyDocument extends Document {
       sheet.seal()
     }
   }
-
-  render() {
-    return (
-      <Html>
-        <Head>
-        {/* <Script src="./GlobalGatewayImageCapture.js"/> */}
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-          {/* <Script src="./GlobalGatewayImageCapture.js" strategy="afterInteractive"/> */}
-        </body>
-      </Html>
-    )
-  }
 }
