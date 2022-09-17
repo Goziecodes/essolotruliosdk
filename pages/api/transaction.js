@@ -8,7 +8,9 @@ const buff = Buffer.from(configKeys);
 export default async function handler(req, res) {
   // console.log(req.body)
   const result = await axios.post(
-          "https://api.globaldatacompany.com/verifications/v1/verify",
+          // "https://api.globaldatacompany.com/verifications/v1/verify",
+           "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkverify",
+      //  "http://localhost:3000/trulio/sdkverify",
           req.body,
           {
             headers: {

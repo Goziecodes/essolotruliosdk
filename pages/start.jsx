@@ -411,7 +411,7 @@ const Signup = styled.button`
 `;
 
 export default function Register() {
-  const [activeTab, setActiveTab] = useState("details");
+  const [activeTab, setActiveTab] = useState("document");
   const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
   const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
@@ -441,6 +441,14 @@ export default function Register() {
   const [documentID, setDocumentID] = useState("");
   const [instanceID, setInstanceID] = useState("");
   const [selfie, setSelfie] = useState("");
+  const router = useRouter();
+
+
+  let user = ''
+  if(typeof window !== 'undefined'){
+     user = window.sessionStorage?.getItem('userDetails') 
+  }
+const userDetails = user !== '' && JSON.parse(user);
 
   // const username = 'dev_Trulioo_15rtRS';
   // const password = 'LxC^^E4PfVn3nMk8';
@@ -480,16 +488,24 @@ export default function Register() {
 
   const AsyncVerifyMutation = useMutation(
     async (userDetails) => {
+      function getFormData(userDetails) {
+        const formData = new FormData();
+        Object.keys(userDetails).forEach(key => formData.append(key, userDetails[key]));
+        return formData;
+    }
+    const formData = getFormData(userDetails);
       return await axios.post(
-        // "https://api.globaldatacompany.com/verifications/v1/verify",
-        "/api/transaction",
-        // "https://catfact.ninja/fact",
-        userDetails
+       // "https://api.globaldatacompany.com/verifications/v1/verify",
+      //  "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkverify",
+       // "http://localhost:3000/trulio/sdkverify",
+       "/api/transaction",
+       formData,
       );
     },
     {
       onSuccess: async (data) => {
         console.log(data, "success");
+        router.push('/end')
         // let response = data?.data;
         // console.log(response.TransactionID, "response from initial verify");
         // setTransactionID(() => response?.TransactionID);
@@ -526,31 +542,41 @@ export default function Register() {
     // console.log(imageFront, "imgf");
     // console.log(imageBack, "imgb");
     // console.log(personalDetails, "pds");
+    console.log(userDetails, 'useme')
+
 
     AsyncVerifyMutation.mutate({
       AcceptTruliooTermsAndConditions: true,
       CleansedAddress: false,
       VerboseMode: true,
       ConfigurationName: "Identity Verification",
-      // CallBackUrl:"https://api.globaldatacompany.com/connection/v1/async-callback",
-      CountryCode: "NG",
-      DataFields: {
-        PersonInfo: {
-          ...personalDetails,
+      CallBackUrl:"https://api.globaldatacompany.com/connection/v1/async-callback",
+      CountryCode: userDetails.CountryCode,
+      // DataFields: {
+        // PersonInfo: {
+          FirstGivenName: userDetails.FirstGivenName,
+      FirstSurName: userDetails.FirstSurName,
+      MiddleName: userDetails.MiddleName,
+      DayOfBirth: userDetails.DayOfBirth,
+      MonthOfBirth: userDetails.MonthOfBirth,
+      YearOfBirth: userDetails.YearOfBirth,
+      ProjectDataId: userDetails?.ProjectDataId,
+      CompanyId: userDetails.CompanyId,
+          // ...personalDetails,
           // "FirstGivenName": data.firstName,
           // "FirstSurName": data.lastName
-        },
+        // },
         // "Location": {},
         // "Communication": {},
-        Document: {
+        // Document: {
           DocumentFrontImage: imageFront,
           DocumentBackImage: imageBack,
           LivePhoto: selfie,
-          DocumentType: "IdentityCard"
-        },
+          DocumentType: userDetails.doctype
+        // },
         // "Passport": {},
         // "Business": {},
-      },
+      // },
     });
 
     // AsyncVerifyMutation.isSuccess && setActiveTab("document");
@@ -1476,7 +1502,7 @@ console.log(result, 'data1')
   return (
     <>
       <div className="descriptionText">
-        <p>Upload Selfie Verification.</p>
+        <p>Take Selfie</p>
       </div>
 
       <Formdiv>
@@ -1509,7 +1535,7 @@ console.log(result, 'data1')
 
             <div className="buttonBox">
               <Signup
-                className="mt-4"
+                className={`mt-4 ${!selfieComplete ? 'd-none' : ''}`}
                 type="button"
                 onClick={() => onVerifyUser()}
                 // onClick={() => setStep(1)}
@@ -1517,13 +1543,13 @@ console.log(result, 'data1')
                {
                     loading ? 
                    <Spinner animation="border" variant="light" /> :
-                    "Continue"
+                    "Submit"
                     }
               </Signup>
             </div>
           </form>
 
-          <div className="mt-4">
+          {/* <div className="mt-4">
          <h4>
           {
             result ? (
@@ -1537,7 +1563,7 @@ console.log(result, 'data1')
           }
             
           </h4>
-         </div>
+         </div> */}
         </div>
       </Formdiv>
     </>
