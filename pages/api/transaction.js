@@ -14,6 +14,11 @@ async function handler(req, res) {
       headers: {
         "Content-Type": req.headers["content-type"], // which is multipart/form-data with boundary included
       },
+    }).catch(err => {
+      console.log(err, 'errororororo1')
+      console.log(err.response, 'errororororo1')
+      res.status(400).json(error);
+
     });
     data.pipe(res);
   } else {
