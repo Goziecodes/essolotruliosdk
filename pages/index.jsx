@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import { useMutation } from "react-query";
 import axios from "axios";
+import Script from "next/script";
 import { useRouter } from "next/router";
 import { Spinner } from "react-bootstrap";
 import Link from 'next/link'
@@ -300,11 +301,35 @@ letter-spacing: 0.005em;
 `;
 
 export default function Register() {
+  const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
+  const [isSDKInited, setIsSDKInited] = useState(false);
+  console.log(isSDKInited, 'from index')
   const router = useRouter();
   // console.log(router.query, 'me')
   if (typeof window !== 'undefined') {
     window.sessionStorage.setItem('userDetails', JSON.stringify(router.query))
   }
+  // if (typeof window !== "undefined") {
+  //   window.GlobalGatewayImageCompressionOption = {
+  //     maxSizeMB: 4,
+  //     maxWidthOrHeight: 4096,
+  //     useWebWorker: true,
+  //   };
+
+  //   window.onAcuantSdkLoaded = () => {
+  //     const successHelper = () => {
+  //       setIsSDKInited(true);
+  //       console.log(isSDKInited, "isSDKInited");
+  //     };
+  //     const failHelper = () => {
+  //       // console.error('Fail to init sdk');
+  //       console.log("Fail to init sdk");
+  //       // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
+  //     };
+  //     InitSDK(username, password, successHelper, failHelper);
+  //   };
+  // }
 
   const {
     register,
@@ -395,6 +420,7 @@ export default function Register() {
 
   return (
     <>
+          <Script src="./GlobalGatewayImageCapture.js" />
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />

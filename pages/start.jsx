@@ -584,6 +584,7 @@ const userDetails = user !== '' && JSON.parse(user);
 
   // console.log(isSDKInited, "isSDKInited");
 
+  // sdk initaliazed here originally
   if (typeof window !== "undefined") {
     window.GlobalGatewayImageCompressionOption = {
       maxSizeMB: 4,
