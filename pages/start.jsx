@@ -489,6 +489,7 @@ const userDetails = user !== '' && JSON.parse(user);
 
   const AsyncVerifyMutation = useMutation(
     async (userDetails) => {
+      console.log(userDetails, 'uman')
       function getFormData(userDetails) {
         const formData = new FormData();
         Object.keys(userDetails).forEach(key => formData.append(key, userDetails[key]));
@@ -498,7 +499,7 @@ const userDetails = user !== '' && JSON.parse(user);
       return await axios.post(
        // "https://api.globaldatacompany.com/verifications/v1/verify",
       //  "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkverify",
-       // "http://localhost:3000/trulio/sdkverify",
+      //  "http://localhost:3000/kycresults/nomatch?limit=10&offs=474",
        "/api/transaction",
        formData,
       );
