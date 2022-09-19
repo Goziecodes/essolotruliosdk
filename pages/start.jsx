@@ -431,7 +431,7 @@ export default function Register() {
   const [spin, setSpin] = useState("");
   const [autoCapture, setAutoCapture] = useState(true);
   const [imageFront, setImageFront] = useState("");
-  console.log(imageFront, 'imagefront');
+  // console.log(imageFront, 'imagefront');
   const [imageBack, setImageBack] = useState("");
   const [livePhoto, setLivePhoto] = useState("");
   const [passport, setPassport] = useState("");
@@ -490,18 +490,54 @@ const userDetails = user !== '' && JSON.parse(user);
   const AsyncVerifyMutation = useMutation(
     async (userDetails) => {
       console.log(userDetails, 'uman')
+
       function getFormData(userDetails) {
         const formData = new FormData();
         Object.keys(userDetails).forEach(key => formData.append(key, userDetails[key]));
         return formData;
     }
+    function dataURLtoFile(dataurl, filename) {
+ 
+      var arr = dataurl.split(','),
+          mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]), 
+          n = bstr.length, 
+          u8arr = new Uint8Array(n);
+          
+      while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+      }
+      
+      return new File([u8arr], filename, {type:mime});
+  }
+
+  const meblob = dataURLtoFile(`data:image/jpeg;base64,${userDetails.LivePhoto}`, 'file.jpeg')
+  console.log(meblob,'file.jpegkl')
+  
+
+const form2 = new FormData()
+form2.append('a', 'abc')
+form2.append('file.jpeg', meblob, 'file.jpeg')
+// form2.append('b', userDetails.DocumentFrontImage)
+
+
     const formData = getFormData(userDetails);
       return await axios.post(
        // "https://api.globaldatacompany.com/verifications/v1/verify",
       //  "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkverify",
-      //  "http://localhost:3000/kycresults/nomatch?limit=10&offs=474",
-       "/api/transaction",
-       formData,
+      // "http://localhost:3000/trulio/sdkverify",
+      // "http://localhost:3000/trulio/sdkverifyasync",
+      "/api/transaction",
+       userDetails,
+      //  {a: 'bc'}
+      // form2,
+      // formData,
+       {
+        headers:{
+          // ...formData.getHeaders,
+          // 'Content-Type': 'multipart/form-data',
+        }
+       }
       );
     },
     {
@@ -1501,7 +1537,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
     });
     // mutation.mutate(data);
   };
-console.log(result, 'data1')
+// console.log(result, 'data1')
   return (
     <>
       <div className="descriptionText">
