@@ -59,7 +59,7 @@ export default async function handler(req, res) {
   try {
     const result = await axios.post(
       // "https://api.globaldatacompany.com/verifications/v1/verify",
-       "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkverifyasync",
+       "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkVerify",
   //  "http://localhost:3000/trulio/sdkverifyasync",
    req.body,
     );
