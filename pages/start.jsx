@@ -30,7 +30,11 @@ import { FiUploadCloud } from 'react-icons/fi';
 import { FaCameraRetro } from 'react-icons/fa';
 import { FaCheckCircle } from 'react-icons/fa';
 
-
+const Spin = styled.div`
+position: absolute;
+top: 40%;
+left: 40%;
+`
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -905,7 +909,15 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
         />
       </Head>
 
-      <Container className="pt-4">
+      {
+        !isSDKInited ?  (
+          <>
+          <Spin>
+        <Spinner  animation="border" variant="dark" />
+        <p>Loading...</p>
+        </Spin>
+        </>
+        ) : ( <Container className="pt-4">
         <div className="logo">
           <Image src={msia} className="" alt="msia" />
         </div>
@@ -1030,7 +1042,10 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
         {activeTab === "selfie" && <Selfie spin={spin} selfieComplete={selfieComplete}  startCapture={startCapture} onVerifyUser={onVerifyUser} result={AsyncVerifyMutation.data} loading={AsyncVerifyMutation.isLoading}
 
 />}
-      </Container>
+      </Container>)
+      }
+
+     
     </>
   );
 }
