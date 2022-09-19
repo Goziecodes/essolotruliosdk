@@ -1574,7 +1574,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
 
             <div className="buttonBox">
               <Signup
-                // className={`mt-4 ${!selfieComplete ? 'd-none' : ''}`}
+                className={`mt-4 ${!selfieComplete ? 'd-none' : ''}`}
                 type="button"
                 onClick={() => onVerifyUser()}
                 // onClick={() => setStep(1)}
