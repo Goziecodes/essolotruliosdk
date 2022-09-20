@@ -923,13 +923,13 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
         </div>
 
         <Header>
-          <HeaderTextBox
+          {/* <HeaderTextBox
             onClick={() => setActiveTab("details")}
             active={activeTab === "details"}
             className="box"
           >
             <HeaderText active={activeTab === "details"}>Details</HeaderText>
-          </HeaderTextBox>
+          </HeaderTextBox> */}
 
           <HeaderTextBox
             onClick={() => setActiveTab("document")}
