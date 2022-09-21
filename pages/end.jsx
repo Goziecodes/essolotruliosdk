@@ -394,6 +394,7 @@ export default function Register() {
 
           <div className="headerBox p-3">
             <p className="welcomeText">Verification process completed, we are reviewing your application...</p>
+            <p className="welcomeText">You can go ahead and close this page.</p>
           </div>
 
         </Texts>

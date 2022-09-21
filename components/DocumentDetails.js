@@ -15,7 +15,8 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 
 
-export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result, setActiveTab }) {
+export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result, setActiveTab, imageFrontError,
+  imageBackError, livePhotoError }) {
   const [step, setStep] = useState(1);
   const [document, setDocument] = useState('ID');
 
@@ -552,7 +553,7 @@ letter-spacing: 0.005em;
                   }}>
                     <div>
                       {
-                        spin === 'docFront' ? <Spinner animation="border" size="lg" /> : docFrontComplete === true ? <FaCheckCircle size={50} /> : <FiUploadCloud size={50} />
+                        spin === 'docFront' ? <Spinner animation="border" size="lg" /> : docFrontComplete === true ? <FaCheckCircle size={50} /> : imageFrontError === true ? <FiUploadCloud size={50}/> : <FiUploadCloud size={50} />
                       }
                     </div>
                     {/* <Upload className="set" style={{ width: "40px" }} /> */}
@@ -560,7 +561,7 @@ letter-spacing: 0.005em;
                       className="uploadfield"
                       type="text"
                       disabled
-                      placeholder="Upload front"
+                      placeholder={`${imageFrontError === true  ? 'Retry' :  'Upload front'}`}
                     // {...register("cpassword", {
                     //   required: {
                     //     value: true,
@@ -577,7 +578,7 @@ letter-spacing: 0.005em;
                   }}>
                      <div>
                       {
-                        spin === 'docBack' ? <Spinner animation="border" size="lg" /> : docBackComplete === true ? <FaCheckCircle size={50} /> : <FiUploadCloud size={50} />
+                        spin === 'docBack' ? <Spinner animation="border" size="lg" /> : docBackComplete === true ? <FaCheckCircle size={50} /> : imageBackError === true ? <FiUploadCloud size={50} /> : <FiUploadCloud size={50} />
                       }
                     </div>
                     {/* <Upload className="set" style={{ width: "40px" }} /> */}
@@ -585,7 +586,7 @@ letter-spacing: 0.005em;
                       className="uploadfield"
                       type="text"
                       disabled
-                      placeholder="Upload Back"
+                      placeholder={`${imageBackError === true  ? 'Retry' :  'Upload Back'}`}
                     // {...register("cpassword", {
                     //   required: {
                     //     value: true,

@@ -442,6 +442,10 @@ export default function Register() {
   const [docFrontComplete, setDocFrontComplete] = useState(false);
   const [docBackComplete, setDocBackComplete] = useState(false);
   const [selfieComplete, setSelfieComplete] = useState(false);
+  const [imageFrontError, setImageFrontError] = useState(true);
+  const [imageBackError, setImageBackError] = useState(false);
+  const [livePhotoError, setLivePhotoError] = useState(false);
+  const [done, setDone] = useState(false);
   const [transactionID, setTransactionID] = useState("");
   const [documentID, setDocumentID] = useState("");
   const [instanceID, setInstanceID] = useState("");
@@ -495,37 +499,13 @@ const userDetails = user !== '' && JSON.parse(user);
     async (userDetails) => {
       console.log(userDetails, 'uman')
 
-      function getFormData(userDetails) {
-        const formData = new FormData();
-        Object.keys(userDetails).forEach(key => formData.append(key, userDetails[key]));
-        return formData;
-    }
-    function dataURLtoFile(dataurl, filename) {
- 
-      var arr = dataurl.split(','),
-          mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]), 
-          n = bstr.length, 
-          u8arr = new Uint8Array(n);
-          
-      while(n--){
-          u8arr[n] = bstr.charCodeAt(n);
-      }
-      
-      return new File([u8arr], filename, {type:mime});
-  }
+    //   function getFormData(userDetails) {
+    //     const formData = new FormData();
+    //     Object.keys(userDetails).forEach(key => formData.append(key, userDetails[key]));
+    //     return formData;
+    // }
+    // const formData = getFormData(userDetails);
 
-  const meblob = dataURLtoFile(`data:image/jpeg;base64,${userDetails.LivePhoto}`, 'file.jpeg')
-  console.log(meblob,'file.jpegkl')
-  
-
-const form2 = new FormData()
-form2.append('a', 'abc')
-form2.append('file.jpeg', meblob, 'file.jpeg')
-// form2.append('b', userDetails.DocumentFrontImage)
-
-
-    const formData = getFormData(userDetails);
       return await axios.post(
        // "https://api.globaldatacompany.com/verifications/v1/verify",
       //  "https://tmp-msia-appgw.azure-api.net/nestor/trulio/sdkverify",
@@ -547,6 +527,7 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
     {
       onSuccess: async (data) => {
         console.log(data, "success");
+        setDone(true)
         router.push('/end')
         // let response = data?.data;
         // console.log(response.TransactionID, "response from initial verify");
@@ -669,6 +650,48 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
       // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
     }
   }
+  function showimageFrontError(error) {
+    console.log(error, "error");
+    setImageFrontError(true)
+    setSpin(()=> '')
+
+    // endProcess();
+    if (Array.isArray(error) && error.length > 0) {
+      // document.querySelector('#globalGatewayError').innerHTML = "Error code: " + error[0].code + " " + error[0].type;
+      console.log(error, "show-error");
+    } else {
+      console.log(error, "show-error");
+      // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
+    }
+  }
+  function showimageBackError(error) {
+    console.log(error, "error");
+    setImageBackError(true)
+    setSpin(()=> '')
+
+    // endProcess();
+    if (Array.isArray(error) && error.length > 0) {
+      // document.querySelector('#globalGatewayError').innerHTML = "Error code: " + error[0].code + " " + error[0].type;
+      console.log(error, "show-error");
+    } else {
+      console.log(error, "show-error");
+      // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
+    }
+  }
+  function showLiveimageError(error) {
+    console.log(error, "error");
+    setImageBackError(true)
+    setSpin(()=> '')
+
+    // endProcess();
+    if (Array.isArray(error) && error.length > 0) {
+      // document.querySelector('#globalGatewayError').innerHTML = "Error code: " + error[0].code + " " + error[0].type;
+      console.log(error, "show-error");
+    } else {
+      console.log(error, "show-error");
+      // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
+    }
+  }
 
   //  async function showImage(result) {
   //     console.log(result, "result");
@@ -778,7 +801,7 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
       shouldCollectGeo,
       startProcess,
       showFrontImage,
-      showError,
+      showimageFrontError,
       token,
       'en-US',
       'en-US'
@@ -794,7 +817,7 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
       shouldCollectGeo,
       startProcess,
       showBackImage,
-      showError,
+      showimageBackError,
       token,
       'en-US',
       'en-US'
@@ -824,7 +847,7 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
       shouldCollectGeo,
       startProcess,
       showLiveImage,
-      showError,
+      showLiveimageError,
       token,
       'en-US',
       'en-US'
@@ -1036,10 +1059,13 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
             loading={AsyncVerifyMutation.isLoading}
             result={AsyncVerifyMutation.data}
             setActiveTab={setActiveTab}
+            imageFrontError={imageFrontError}
+            imageBackError={imageBackError}
+            livePhotoError={livePhotoError}
           />
         )}
 
-        {activeTab === "selfie" && <Selfie spin={spin} selfieComplete={selfieComplete}  startCapture={startCapture} onVerifyUser={onVerifyUser} result={AsyncVerifyMutation.data} loading={AsyncVerifyMutation.isLoading}
+        {activeTab === "selfie" && <Selfie spin={spin} selfieComplete={selfieComplete}  startCapture={startCapture} onVerifyUser={onVerifyUser} result={AsyncVerifyMutation.data} loading={AsyncVerifyMutation.isLoading} livePhotoError={livePhotoError} done={done}
 
 />}
       </Container>)
@@ -1447,7 +1473,7 @@ form2.append('file.jpeg', meblob, 'file.jpeg')
 //   );
 // };
 
-const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loading}) => {
+const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loading, livePhotoError, done}) => {
   const {
     register,
     handleSubmit,
@@ -1470,6 +1496,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
       width: 100%;
       height: 100%;
   display: flex;
+  flex-direction: column;
   padding: 20px;
   position: relative;
   border-radius: 20px;
@@ -1479,6 +1506,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
   background: linear-gradient(111.69deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.025) 100.12%), #FFFFFF;
   box-shadow: inset -4px -4px 8px #FFFFFF, inset 4px 4px 8px rgba(0, 0, 0, 0.16);
   margin: 0px 10px;
+
 
 
   .set{
@@ -1570,20 +1598,10 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
                 {/* <Camera className="set" style={{ width: "40px" }} /> */}
                 <div>
                       {
-                        spin === 'selfie' ? <Spinner animation="border" size="lg" /> : selfieComplete === true ? <FaCheckCircle size={50} /> : <FaCameraRetro className="set" size={50} />
+                        spin === 'selfie' ? <Spinner animation="border" size="lg" /> : selfieComplete === true ? <FaCheckCircle size={50} /> : livePhotoError === true ? <FaCameraRetro className="set" size={50} /> : <FaCameraRetro className="set" size={50} />
                       }
-                    </div>    
-                  {/* <input
-                  className="uploadfield"
-                  type="text"
-                  placeholder=""
-                  {...register("cpassword", {
-                    required: {
-                      value: true,
-                      message: "password is required",
-                    },
-                  })}
-                /> */}
+                    </div>  
+                    <p>{`${livePhotoError === true  ? 'Retry' :  'take selfie'}`}</p>  
               </div>
             </SelfieBox>
 
@@ -1597,7 +1615,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
                {
                     loading ? 
                    <Spinner animation="border" variant="light" /> :
-                    "Submit"
+                   `${done === true ? 'Submitted': 'Submit'}`
                     }
               </Signup>
             </div>
