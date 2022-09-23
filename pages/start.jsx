@@ -443,7 +443,6 @@ export default function Register() {
   const [docBackComplete, setDocBackComplete] = useState(false);
   const [selfieComplete, setSelfieComplete] = useState(false);
   const [imageFrontError, setImageFrontError] = useState(false);
-  console.log(livePhotoError, 'livePhotoError')
   const [imageBackError, setImageBackError] = useState(false);
   const [livePhotoError, setLivePhotoError] = useState(false);
   console.log(livePhotoError, 'livePhotoError')
