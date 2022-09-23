@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
@@ -300,17 +300,18 @@ letter-spacing: 0.005em;
   }
 `;
 
-export default function Register() {
-  // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
-  // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
-  // const [isSDKInited, setIsSDKInited] = useState(false);
-  // console.log(isSDKInited, 'from index')
+export default function Home() {
+  const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
+  const [isSDKInited, setIsSDKInited] = useState(false);
+  console.log(isSDKInited, 'from index')
   const router = useRouter();
   // console.log(router.query, 'me')
-  if (typeof window !== 'undefined') {
-    window.sessionStorage.setItem('userDetails', JSON.stringify(router.query))
-  }
+  // if (typeof window !== 'undefined') {
+  //   window.sessionStorage.setItem('userDetails', JSON.stringify(router.query))
+  // }
   // if (typeof window !== "undefined") {
+  //   console.log(window, 'window')
   //   window.GlobalGatewayImageCompressionOption = {
   //     maxSizeMB: 4,
   //     maxWidthOrHeight: 4096,
@@ -327,9 +328,13 @@ export default function Register() {
   //       console.log("Fail to init sdk");
   //       // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
   //     };
+  //     console.log('about to init');
   //     InitSDK(username, password, successHelper, failHelper);
   //   };
   // }
+
+  // const loaded =  globalThis?.window
+  // console.log(loaded, 'pumping')
 
   const {
     register,
@@ -420,7 +425,7 @@ export default function Register() {
 
   return (
     <>
-          {/* <Script src="./GlobalGatewayImageCapture.js" /> */}
+      <Script src="./GlobalGatewayImageCapture.js" />
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -441,10 +446,7 @@ export default function Register() {
 
           <div className="descriptionText">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus
-              tempor nulla rhoncus etiam. Egestas nunc vitae justo lorem.
-              Phasellus bibendum aliquet mauris erat eleifend turpis gravida
-              lorem. Consequat risus.
+             Make sure your scanned documents are very clear, legible and zoomed in properly for best results.
             </p>
           </div>
 

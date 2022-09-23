@@ -421,7 +421,7 @@ export default function Register() {
   // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
   // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   const [sdkToken, setSdkToken] = useState("");
-  const [isSDKInited, setIsSDKInited] = useState(false);
+  const [isSDKInited, setIsSDKInited] = useState(true);
   console.log(isSDKInited, 'isSDKInited')
   const [personalDetails, setPersonalDetails] = useState({
     FirstGivenName: "",
@@ -442,9 +442,11 @@ export default function Register() {
   const [docFrontComplete, setDocFrontComplete] = useState(false);
   const [docBackComplete, setDocBackComplete] = useState(false);
   const [selfieComplete, setSelfieComplete] = useState(false);
-  const [imageFrontError, setImageFrontError] = useState(true);
+  const [imageFrontError, setImageFrontError] = useState(false);
+  console.log(livePhotoError, 'livePhotoError')
   const [imageBackError, setImageBackError] = useState(false);
   const [livePhotoError, setLivePhotoError] = useState(false);
+  console.log(livePhotoError, 'livePhotoError')
   const [done, setDone] = useState(false);
   const [transactionID, setTransactionID] = useState("");
   const [documentID, setDocumentID] = useState("");
@@ -608,29 +610,30 @@ const userDetails = user !== '' && JSON.parse(user);
   // console.log(isSDKInited, "isSDKInited");
 
   // sdk initaliazed here originally
-  if (typeof window !== "undefined") {
-    window.GlobalGatewayImageCompressionOption = {
-      maxSizeMB: 4,
-      maxWidthOrHeight: 4096,
-      useWebWorker: true,
-    };
+  // if (typeof window !== "undefined") {
+  //   window.GlobalGatewayImageCompressionOption = {
+  //     maxSizeMB: 4,
+  //     maxWidthOrHeight: 4096,
+  //     useWebWorker: true,
+  //   };
 
-    window.onAcuantSdkLoaded = () => {
+  //   window.onAcuantSdkLoaded = () => {
 
-      const successHelper = () => {
-        setIsSDKInited(true);
-        console.log("SDKInited");
-      };
+  //     const successHelper = () => {
+  //       setIsSDKInited(true);
+  //       console.log("SDKInited");
+  //     };
 
-      const failHelper = (error) => {
-        console.error('Fail to init sdk');
-        console.log("Fail to init sdk");
-        console.log(error, "Fail to init sdk");
-        // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
-      };
-      InitSDK(username, password, successHelper, failHelper);
-    };
-  }
+  //     const failHelper = (error) => {
+  //       console.error('Fail to init sdk');
+  //       console.log("Fail to init sdk");
+  //       console.log(error, "Fail to init sdk");
+  //       // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
+  //     };
+  //     console.log('about to init');
+  //     InitSDK(username, password, successHelper, failHelper);
+  //   };
+  // }
 
   // function writeText(text) {
   //   // document.getElementById('quality-data').value = text;
@@ -680,7 +683,7 @@ const userDetails = user !== '' && JSON.parse(user);
   }
   function showLiveimageError(error) {
     console.log(error, "error");
-    setImageBackError(true)
+    setLivePhotoError(true)
     setSpin(()=> '')
 
     // endProcess();
@@ -766,7 +769,7 @@ const userDetails = user !== '' && JSON.parse(user);
     console.log('starting capture')
     if (!isSDKInited) {
       console.log('Capture SDK is not initialized');
-      return;
+      // return;
     }
     // var geoDropdown = document.getElementById("geoModeSelection");
     var shouldCollectGeo = true;
@@ -898,18 +901,21 @@ const userDetails = user !== '' && JSON.parse(user);
     console.log('done')
     setSpin(() => '')
     setDocFrontComplete(true)
+    setImageFrontError(false)
     setImageFront(result.image.split(",")[1]);
   }
 
   function showBackImage(result) {
     setSpin(() => '')
     setDocBackComplete(true)
+    setImageBackError(false)
     setImageBack(result.image.split(",")[1]);
   }
 
   function showLiveImage(result) {
     setSpin(() => '')
     setSelfieComplete(true)
+    setLivePhotoError(false)
     setSelfie(result.image.split(",")[1]);
   }
 
@@ -921,7 +927,7 @@ const userDetails = user !== '' && JSON.parse(user);
   return (
     <>
       {/* <Script src="./GlobalGatewayCapturePublicAcuant/GlobalGatewayImageCapture.js" /> */}
-      <Script src="./GlobalGatewayImageCapture.js" />
+      {/* <Script src="./GlobalGatewayImageCapture.js" /> */}
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -963,7 +969,7 @@ const userDetails = user !== '' && JSON.parse(user);
           </HeaderTextBox>
 
           <HeaderTextBox
-            onClick={() => setActiveTab("selfie")}
+            // onClick={() => setActiveTab("selfie")}
             active={activeTab === "selfie"}
             className="box"
           >
@@ -1051,6 +1057,7 @@ const userDetails = user !== '' && JSON.parse(user);
             startCapture={startCapture}
             setSelected={setSelected}
             setAutoCapture={setAutoCapture}
+            autoCapture={autoCapture}
             onVerifyUser={onVerifyUser}
             setSpin={setSpin}
             docFrontComplete={docFrontComplete}
@@ -1598,10 +1605,12 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
                 {/* <Camera className="set" style={{ width: "40px" }} /> */}
                 <div>
                       {
-                        spin === 'selfie' ? <Spinner animation="border" size="lg" /> : selfieComplete === true ? <FaCheckCircle size={50} /> : livePhotoError === true ? <FaCameraRetro className="set" size={50} /> : <FaCameraRetro className="set" size={50} />
+                        spin === 'selfie' ? <Spinner animation="border" size="lg" /> : selfieComplete === true ?<FaCheckCircle color="green" size={50} /> : livePhotoError === true ? <FaCameraRetro className="set" size={50} /> : <FaCameraRetro className="set" size={50} />
                       }
                     </div>  
-                    <p>{`${livePhotoError === true  ? 'Retry' :  'take selfie'}`}</p>  
+                 {
+                  selfieComplete ? (null) : (   <h6 className={`${livePhotoError ? "text-danger" : null}`}>{`${livePhotoError === true  ? 'Please Retry' :  'take selfie'}`}</h6> )
+                 } 
               </div>
             </SelfieBox>
 

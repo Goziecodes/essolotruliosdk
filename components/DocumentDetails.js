@@ -16,11 +16,12 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 
 export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result, setActiveTab, imageFrontError,
-  imageBackError, livePhotoError }) {
+  imageBackError, livePhotoError, autoCapture }) {
   const [step, setStep] = useState(1);
   const [document, setDocument] = useState('ID');
 
   console.log({loading, result})
+  console.log({imageFrontError})
 
   const {
     register: DocumentDetailsRegister,
@@ -29,6 +30,7 @@ export default function DocumentDetails({ startCapture, setSelected, setAutoCapt
     getValues,
     formState: { errors },
   } = useForm();
+
 
   const documentDetailsonSubmit = (data) => {
     setDocument(data.document);
@@ -507,6 +509,7 @@ letter-spacing: 0.005em;
                         type="radio"
                         value='true'
                         // defaultChecked
+                        checked={autoCapture}
                         onClick={() => setAutoCapture(true)}
                         {...DocumentDetailsRegister("AutoCapture", {
                           required: false,
@@ -552,12 +555,16 @@ letter-spacing: 0.005em;
                     startCapture('DocumentFront');
                   }}>
                     <div>
+                    
                       {
-                        spin === 'docFront' ? <Spinner animation="border" size="lg" /> : docFrontComplete === true ? <FaCheckCircle size={50} /> : imageFrontError === true ? <FiUploadCloud size={50}/> : <FiUploadCloud size={50} />
+                        spin === 'docFront' ? <Spinner animation="border" size="lg" /> : docFrontComplete === true ? <FaCheckCircle color="green" size={50} />  : imageFrontError === true ? <FiUploadCloud size={50}/> : <FiUploadCloud size={50} />
                       }
                     </div>
+                    {
+                      docFrontComplete ? (null) : (<h6 className={`${imageFrontError ? "text-danger" : null}`}>{`${imageFrontError === true  ? 'Please Retry' :  'Upload front'}`}</h6>)
+                    }
                     {/* <Upload className="set" style={{ width: "40px" }} /> */}
-                    <input
+                    {/* <input
                       className="uploadfield"
                       type="text"
                       disabled
@@ -568,7 +575,7 @@ letter-spacing: 0.005em;
                     //     message: "password is required",
                     //   },
                     // })}
-                    />
+                    /> */}
 
                   </div>
 
@@ -578,11 +585,14 @@ letter-spacing: 0.005em;
                   }}>
                      <div>
                       {
-                        spin === 'docBack' ? <Spinner animation="border" size="lg" /> : docBackComplete === true ? <FaCheckCircle size={50} /> : imageBackError === true ? <FiUploadCloud size={50} /> : <FiUploadCloud size={50} />
+                        spin === 'docBack' ? <Spinner animation="border" size="lg" /> : docBackComplete === true ? <FaCheckCircle color="green" size={50} /> : imageBackError === true ? <FiUploadCloud size={50} /> : <FiUploadCloud size={50} />
                       }
                     </div>
+                  {
+                    docBackComplete ? (null) : (  <h6 className={`${imageBackError ? "text-danger" : null}`}>{`${imageBackError === true  ? 'Please Retry' :  'Upload Back'}`}</h6>)
+                  }
                     {/* <Upload className="set" style={{ width: "40px" }} /> */}
-                    <input
+                    {/* <input
                       className="uploadfield"
                       type="text"
                       disabled
@@ -593,7 +603,7 @@ letter-spacing: 0.005em;
                     //     message: "password is required",
                     //   },
                     // })}
-                    />
+                    /> */}
 
                   </div>
                 </div>
@@ -657,20 +667,22 @@ letter-spacing: 0.005em;
                 <span className="err">{errors.issuingBody?.message}</span>
               </div> */}
 
-                <div className="buttonBox">
-                  <Signup
-                    className="mt-4"
-                    type="button"
-                    // onClick={() => onVerifyUser()}
-                    onClick={() => setActiveTab(()=> "selfie")}
-                  >
-                    {
-                    loading ? 
-                   <Spinner animation="border" variant="light" /> :
-                    "Continue"
-                    }
-                  </Signup>
-                </div>
+             {
+              docBackComplete && docFrontComplete ? (   <div className="buttonBox">
+              <Signup
+                className="mt-4"
+                type="button"
+                // onClick={() => onVerifyUser()}
+                onClick={() => setActiveTab(()=> "selfie")}
+              >
+                {
+                loading ? 
+               <Spinner animation="border" variant="light" /> :
+                "Continue"
+                }
+              </Signup>
+            </div>) : (null)
+             }
               </form>
             </div>
           </Formdiv>
