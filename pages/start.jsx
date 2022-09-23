@@ -421,7 +421,7 @@ export default function Register() {
   // const [username, setUsername] = useState(process.env.NEXT_PUBLIC_USERNAME);
   // const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   const [sdkToken, setSdkToken] = useState("");
-  const [isSDKInited, setIsSDKInited] = useState(true);
+  const [isSDKInited, setIsSDKInited] = useState(false);
   console.log(isSDKInited, 'isSDKInited')
   const [personalDetails, setPersonalDetails] = useState({
     FirstGivenName: "",
@@ -926,7 +926,7 @@ const userDetails = user !== '' && JSON.parse(user);
   return (
     <>
       {/* <Script src="./GlobalGatewayCapturePublicAcuant/GlobalGatewayImageCapture.js" /> */}
-      {/* <Script src="./GlobalGatewayImageCapture.js" /> */}
+      <Script src="./GlobalGatewayImageCapture.js" />
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
