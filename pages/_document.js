@@ -19,9 +19,9 @@ export default class MyDocument extends Document {
         ...initialProps,
         styles: (
           <>
-          <NextScript />
-          <Script src="./GlobalGatewayImageCapture.js" strategy="beforeInteractive"
-          ></Script>
+          {/* <NextScript /> */}
+          {/* <Script src="./GlobalGatewayImageCapture.js" strategy="beforeInteractive" */}
+          {/* ></Script> */}
             {initialProps.styles}
             {sheet.getStyleElement()}
           </>

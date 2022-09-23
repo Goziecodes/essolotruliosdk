@@ -425,7 +425,7 @@ export default function Home() {
 
   return (
     <>
-      <Script src="./GlobalGatewayImageCapture.js" />
+      {/* <Script src="./GlobalGatewayImageCapture.js" /> */}
       <ToastContainer />
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
