@@ -307,9 +307,9 @@ export default function Home() {
   console.log(isSDKInited, 'from index')
   const router = useRouter();
   // console.log(router.query, 'me')
-  // if (typeof window !== 'undefined') {
-  //   window.sessionStorage.setItem('userDetails', JSON.stringify(router.query))
-  // }
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem('userDetails', JSON.stringify(router.query))
+  }
   // if (typeof window !== "undefined") {
   //   console.log(window, 'window')
   //   window.GlobalGatewayImageCompressionOption = {

@@ -609,30 +609,30 @@ const userDetails = user !== '' && JSON.parse(user);
   // console.log(isSDKInited, "isSDKInited");
 
   // sdk initaliazed here originally
-  // if (typeof window !== "undefined") {
-  //   window.GlobalGatewayImageCompressionOption = {
-  //     maxSizeMB: 4,
-  //     maxWidthOrHeight: 4096,
-  //     useWebWorker: true,
-  //   };
+  if (typeof window !== "undefined") {
+    window.GlobalGatewayImageCompressionOption = {
+      maxSizeMB: 4,
+      maxWidthOrHeight: 4096,
+      useWebWorker: true,
+    };
 
-  //   window.onAcuantSdkLoaded = () => {
+    // window.onAcuantSdkLoaded = () => {
 
-  //     const successHelper = () => {
-  //       setIsSDKInited(true);
-  //       console.log("SDKInited");
-  //     };
+    //   const successHelper = () => {
+    //     setIsSDKInited(true);
+    //     console.log("SDKInited");
+    //   };
 
-  //     const failHelper = (error) => {
-  //       console.error('Fail to init sdk');
-  //       console.log("Fail to init sdk");
-  //       console.log(error, "Fail to init sdk");
-  //       // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
-  //     };
-  //     console.log('about to init');
-  //     InitSDK(username, password, successHelper, failHelper);
-  //   };
-  // }
+    //   const failHelper = (error) => {
+    //     console.error('Fail to init sdk');
+    //     console.log("Fail to init sdk");
+    //     console.log(error, "Fail to init sdk");
+    //     // showError([{ code: -1, type: 'Capture SDK is not initialized' }]);
+    //   };
+    //   console.log('about to init');
+    //   InitSDK(username, password, successHelper, failHelper);
+    // };
+  }
 
   // function writeText(text) {
   //   // document.getElementById('quality-data').value = text;
