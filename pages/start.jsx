@@ -586,6 +586,7 @@ const userDetails = user !== '' && JSON.parse(user);
       YearOfBirth: userDetails.YearOfBirth,
       ProjectDataId: userDetails?.ProjectDataId,
       CompanyId: userDetails.CompanyId,
+      Idnumber: userDetails.Idnumber,
           // ...personalDetails,
           // "FirstGivenName": data.firstName,
           // "FirstSurName": data.lastName
