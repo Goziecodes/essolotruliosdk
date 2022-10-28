@@ -16,7 +16,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 
 export default function DocumentDetails({ startCapture, setSelected, setAutoCapture, onVerifyUser, setSpin, spin, docFrontComplete, docBackComplete, loading, result, setActiveTab, imageFrontError,
-  imageBackError, livePhotoError, autoCapture }) {
+  imageBackError, livePhotoError, autoCapture, documentPageError, setDocumentPageError  }) {
   const [step, setStep] = useState(1);
   const [document, setDocument] = useState('ID');
 
@@ -607,6 +607,12 @@ letter-spacing: 0.005em;
 
                   </div>
                 </div>
+
+                <p className="text-center text-danger pt-4">
+                  {
+                  documentPageError && `${documentPageError}. please Retry`
+                  }
+                </p>
 
                 {/* <div className="inputContainer">
                 <Paper className="user" style={{ width: "40px" }} />
