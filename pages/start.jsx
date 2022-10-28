@@ -435,6 +435,8 @@ export default function Register() {
   const [spin, setSpin] = useState("");
   const [autoCapture, setAutoCapture] = useState(true);
   const [imageFront, setImageFront] = useState("");
+  const [documentPageError, setDocumentPageError] = useState("");
+  const [selfiePageError, setSelfiePageError] = useState("error me");
   // console.log(imageFront, 'imagefront');
   const [imageBack, setImageBack] = useState("");
   const [livePhoto, setLivePhoto] = useState("");
@@ -587,6 +589,8 @@ const userDetails = user !== '' && JSON.parse(user);
       ProjectDataId: userDetails?.ProjectDataId,
       CompanyId: userDetails.CompanyId,
       Idnumber: userDetails.Idnumber,
+      ProjectId: userDetails.ProjectId,
+      UserDataId: userDetails.UserDataId,
           // ...personalDetails,
           // "FirstGivenName": data.firstName,
           // "FirstSurName": data.lastName
@@ -648,8 +652,10 @@ const userDetails = user !== '' && JSON.parse(user);
     if (Array.isArray(error) && error.length > 0) {
       // document.querySelector('#globalGatewayError').innerHTML = "Error code: " + error[0].code + " " + error[0].type;
       console.log(error, "show-error");
+      setDocumentPageError(error[0].description);
     } else {
       console.log(error, "show-error");
+      setDocumentPageError(error[0].description);
       // document.querySelector('#globalGatewayError').innerHTML = "Unable to capture";
     }
   }
@@ -1069,6 +1075,8 @@ const userDetails = user !== '' && JSON.parse(user);
             imageFrontError={imageFrontError}
             imageBackError={imageBackError}
             livePhotoError={livePhotoError}
+            documentPageError={documentPageError}
+            setDocumentPageError={setDocumentPageError}
           />
         )}
 
@@ -1618,6 +1626,7 @@ const Selfie = ({spin, selfieComplete, startCapture, onVerifyUser, result, loadi
               <Signup
                 className={`mt-4 ${!selfieComplete ? 'd-none' : ''}`}
                 type="button"
+                disabled={loading ? true : false }
                 onClick={() => onVerifyUser()}
                 // onClick={() => setStep(1)}
               >
